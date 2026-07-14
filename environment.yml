@@ -1,0 +1,20 @@
+# Conda environment for reproducing the paper figures — pinned to the versions used for publication.
+#   conda env create -f environment.yml && conda activate upulli-figures
+name: upulli-figures
+channels:
+  - conda-forge
+dependencies:
+  - python=3.9
+  - numpy=2.0.2
+  - pandas=2.3.1
+  - matplotlib=3.9.4
+  - scipy=1.13.1
+  # --- build/ (rebuild the tables from the raw feature matrix) ---
+  - scikit-learn=1.6.1
+  - numba=0.60.0
+  - pyarrow=21.0.0
+  - pip
+  - pip:
+      - umap-learn==0.5.9.post2
+  # NOTE: the figures use the 'Gillius ADF' font (not on conda-forge). Install it at the OS level for
+  # exact text spacing; otherwise matplotlib falls back silently (coordinates/data are unaffected).

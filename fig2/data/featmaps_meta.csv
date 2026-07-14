@@ -1,0 +1,5 @@
+feature,label,unit,group,rfAccuracy
+colony_meanIntensity_mean,Average Colony Intensity,a.u.,colony,0.911502016129032
+nColonies,Number of Colonies,count,colony,0.9244573252688172
+colony_eccentricity_mean,Average Colony Eccentricity,,colony,0.7411374327956989
+whole_haralick_8,Global Texture Entropy,a.u.,whole,0.9252150537634408

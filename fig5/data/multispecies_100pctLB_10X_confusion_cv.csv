@@ -1,0 +1,9 @@
+,A. baumannii,A. baylyi,E. coli,E. faecalis,K. pneumoniae,P. aeruginosa,S. aureus,V. cholerae
+A. baumannii,0.995,0.0,0.0,0.0,0.0,0.0,0.005,0.0
+A. baylyi,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+E. coli,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0
+E. faecalis,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0
+K. pneumoniae,0.0,0.0,0.0,0.0,0.91,0.0,0.0,0.09
+P. aeruginosa,0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0
+S. aureus,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+V. cholerae,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0

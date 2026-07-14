@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+
+# rendered outputs — regenerate deterministically from data/ via render/
+fig*/figures/
+
+# build-layer heavy inputs (fetch from KiltHub; not tracked)
+fig*/build/inputs/
+
+# manuscript drafts (not part of the figure repo)
+*.pdf

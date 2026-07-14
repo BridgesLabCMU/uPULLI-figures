@@ -1,0 +1,20 @@
+# Paper-figure reproduction — pinned to the versions the published figures were produced with (Python 3.9).
+#
+# Rendering the panels from the bundled source-data tables (data/) needs the core set.
+# Rebuilding those tables from the raw feature matrix (build/, requires the KiltHub wide table)
+# additionally needs the "rebuild" set.
+#
+# The figures assume the 'Gillius ADF' font; if it is missing, matplotlib falls back silently and text
+# spacing will differ from the published figures (the data/coordinates are unaffected).
+
+# --- core: render the panels from data/ ---
+numpy==2.0.2
+pandas==2.3.1
+matplotlib==3.9.4
+scipy==1.13.1          # dendrogram tree drawing (Panel D)
+
+# --- rebuild: regenerate the tables from the raw feature matrix (build/) ---
+scikit-learn==1.6.1
+umap-learn==0.5.9.post2
+numba==0.60.0
+pyarrow==21.0.0        # read the .parquet feature matrix / embeddings

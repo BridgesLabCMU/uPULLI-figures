@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the µPULLI manuscript and this repository."
+title: "uPULLI-figures: figure-reproduction code and source data for the µPULLI manuscript"
+abstract: >-
+  Self-contained code and source-data tables that regenerate the figures of the µPULLI
+  manuscript (V. cholerae biofilm phenotyping): reimaging phenotype landscape, training-set
+  classification (numerical + DINOv2 embeddings), clean-deletion projection, and cross-system
+  generalization (compounds, K. pneumoniae, multispecies).
+authors:
+  - name: "[FILL: author list]"
+    affiliation: "Bridges Lab, Carnegie Mellon University"
+license: MIT
+repository-code: "https://github.com/BridgesLabCMU/uPULLI-figures"
+# version: v1.0.0            # set at the tagged release
+# date-released: YYYY-MM-DD
+# doi: 10.XXXX/zenodo.XXXXX  # DOI of the archived snapshot (KiltHub/Zenodo)
