@@ -24,6 +24,9 @@ plotting.setStyle(extra={'font.size': 36, 'axes.titlesize': 40, 'axes.labelsize'
 meta = pd.read_csv(config.TABLES / 'featmaps_meta.csv')
 outDir = config.ensure(config.FIGURES)
 
+# per-family colormap (consistent with Fig S3): biomass = red-blue diverging, whole-image = viridis, colony = plasma
+CMAP_BY_GROUP = {'biomass': 'coolwarm', 'whole': 'viridis', 'colony': 'plasma'}
+
 for _, r in meta.iterrows():
     feat, label, unit = r['feature'], r['label'], ('' if pd.isna(r['unit']) else str(r['unit']))
     mat = pd.read_csv(config.TABLES / f'featmap_{feat}.csv', index_col=0)
@@ -31,18 +34,18 @@ for _, r in meta.iterrows():
     frames = [int(c) for c in mat.columns]
     heatmap = np.ma.masked_invalid(mat.values.astype(float))
     vmin, vmax = float(np.nanmin(heatmap)), float(np.nanmax(heatmap))
-    cmap = plt.cm.plasma.copy(); cmap.set_bad('black')
+    cmap = plt.get_cmap(CMAP_BY_GROUP.get(r['group'], 'plasma')).copy(); cmap.set_bad('black')
 
     fig = plt.figure(figsize=(9, 8))
     gs = fig.add_gridspec(2, 1, height_ratios=[1, 14], left=0.25, right=0.95, bottom=0.10, top=0.86, hspace=0.15)
     cax = fig.add_subplot(gs[0]); ax = fig.add_subplot(gs[1])
     im = ax.imshow(heatmap, aspect='auto', cmap=cmap, interpolation='nearest', vmin=vmin, vmax=vmax)
     cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
-    if unit:
-        cbar.set_label(f'({unit})', fontsize=24, labelpad=8); cbar.ax.xaxis.set_label_position('top')
+    cbar.set_label(f'({unit})' if unit else '(unitless)', fontsize=24, labelpad=8)
+    cbar.ax.xaxis.set_label_position('top')
     cbar.ax.tick_params(labelsize=20)
     unitTxt = f' ({unit})' if unit else ''
-    rfTxt = '' if pd.isna(r['rfAccuracy']) else f'\nRF Accuracy = {float(r["rfAccuracy"]):.3f}'
+    rfTxt = '' if pd.isna(r['rfAccuracy']) else f'\nClassification Accuracy = {float(r["rfAccuracy"]):.3f}'
     cax.set_title(f'{label}{unitTxt}{rfTxt}', fontsize=26, pad=14)
 
     tickFrames = [t for t in frames if t >= 10 and t % 5 == 0]

@@ -6,7 +6,8 @@ atlas sigma. WT is the reference and is dropped from the matrix. Rows = conditio
 (canonical order). NOTE: fixes the `whole_entropy_` filter typo in the original so the Global Entropy
 row IS included.
 
-Reads:  config.CLEANDEL_WIDES (conditions + WT reference), config.REIM_WIDE (atlas sigma)
+Reads:  [config.input('cluster/cleanDel_260521_collapsedWide.parquet'),
+                       config.input('cluster/cleanDel_260522_collapsedWide.parquet')] (conditions + WT reference), config.input('reimaging/collapsedWide.parquet') (atlas sigma)
 Writes: data/cleanDel_vsWT_horizontal_matrix.csv   (conditions x features)
 """
 import sys
@@ -49,7 +50,8 @@ def sortKey(b):
     return (4, b)
 
 
-df = pd.concat([pd.read_parquet(p) for p in config.CLEANDEL_WIDES], ignore_index=True)
+df = pd.concat([pd.read_parquet(p) for p in [config.input('cluster/cleanDel_260521_collapsedWide.parquet'),
+                       config.input('cluster/cleanDel_260522_collapsedWide.parquet')]], ignore_index=True)
 cols = []
 for c in df.columns:
     if not inRange(c):
@@ -78,7 +80,7 @@ for m in mutants:
 
 
 def atlasStats(bases):
-    reim = pd.read_parquet(config.REIM_WIDE)
+    reim = pd.read_parquet(config.input('reimaging/collapsedWide.parquet'))
     bc = {int(re.search(r'_t(\d+)$', c).group(1)): c for c in reim.columns if re.match(r'^biomass_t\d+$', c)}
     frames = sorted(bc)
     pf = np.array(frames)[np.nanargmax(reim[[bc[f] for f in frames]].to_numpy(), axis=1)]

@@ -1,0 +1,42 @@
+"""figS1 figlib shim — per-figure paths + re-export of the shared library.
+
+Panel scripts import: `from figlib import config, features, plotting, STRAIN_ORDER, DISPLAY_NAMES, STRAIN_COLORS`.
+Shared, figure-agnostic code lives in paper-figures/figlib_shared.py.
+
+Supplemental Figure S1 mirrors Figure 1 (training set, DINOv2 embeddings) but uses the DINOv2
+**patch tokens** instead of the CLS token. The per-well representation is the 9 patch tokens per
+(well, frame) mean-pooled to a single 768-d descriptor per frame (`training_patchmean.npy`), then
+stacked over the same growth-phase window and fed through the identical UMAP + RF pipeline — so S1 is
+a clean patch-token-vs-CLS comparison against Fig 1.
+"""
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # -> paper-figures/ for figlib_shared
+import figlib_shared as _S
+
+features = _S.features
+plotting = _S.plotting
+
+HERE = Path(__file__).resolve().parent      # paper-figures/figS1/
+
+config = _S.make_config(
+    HERE,
+    inputs=[
+        'training/wide.parquet',
+        'training/embeddings/patchmean.npy',
+        'training/embeddings/index.csv',
+    ],
+)
+
+# figS1 shares the 8-mutant training set display with fig1/fig2.
+STRAIN_ORDER = ['WT', 'vpsL', 'rbmB', 'hapR', 'potD1', 'flaA', 'luxO_D47E', 'vpvC_W240R']
+DISPLAY_NAMES = {
+    'WT': r'WT', 'vpsL': r'$\Delta \mathit{vpsL}$', 'rbmB': r'$\Delta \mathit{rbmB}$',
+    'hapR': r'$\Delta \mathit{hapR}$', 'potD1': r'$\Delta \mathit{potD1}$', 'flaA': r'$\Delta \mathit{flaA}$',
+    'luxO_D47E': r'$\mathit{luxO}^{D47E}$', 'vpvC_W240R': r'$\mathit{vpvC}^{W240R}$',
+}
+STRAIN_COLORS = {
+    'WT': '#808588', 'vpsL': '#ff6f00', 'rbmB': '#180ae0', 'hapR': '#00a2ff',
+    'potD1': '#b5ff60', 'flaA': '#00ffb3', 'luxO_D47E': '#ffbc3e', 'vpvC_W240R': '#CF0000',
+}

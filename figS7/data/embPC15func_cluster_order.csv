@@ -1,0 +1,51 @@
+mutant,annotation,color
+wavL,O-Antigen Biosynthesis,#0096ff
+bioC,Biotin Biosynthesis,#ff9f1c
+bioD,Biotin Biosynthesis,#ff9f1c
+bioA,Biotin Biosynthesis,#ff9f1c
+bioF,Biotin Biosynthesis,#ff9f1c
+wbeL,O-Antigen Biosynthesis,#0096ff
+manA,O-Antigen Biosynthesis,#0096ff
+manC,O-Antigen Biosynthesis,#0096ff
+potD1,Polyamine Import,#14f7f0
+potA,Polyamine Import,#14f7f0
+potB,Polyamine Import,#14f7f0
+lpxM,O-Antigen Biosynthesis,#0096ff
+wbeT,O-Antigen Biosynthesis,#0096ff
+flgO,Motility,#ff0004
+flgP,Motility,#ff0004
+flhA,Motility,#ff0004
+fliL,Motility,#ff0004
+flaA,Motility,#ff0004
+fliQ,Motility,#ff0004
+fliP,Motility,#ff0004
+fliS,Motility,#ff0004
+flhB,Motility,#ff0004
+fliR,Motility,#ff0004
+flrB,Motility,#ff0004
+flgB,Motility,#ff0004
+flgF,Motility,#ff0004
+fliJ,Motility,#ff0004
+cheW,Motility,#ff0004
+flgA,Motility,#ff0004
+flgD,Motility,#ff0004
+fliA,Motility,#ff0004
+flrA,Motility,#ff0004
+flgT,Motility,#ff0004
+fliE,Motility,#ff0004
+vibB,Vibriobactin Biosynthesis,#ba17f6
+lipA,Pyruvate Flux,#39ff14
+pdhE2,Pyruvate Flux,#39ff14
+manB,O-Antigen Biosynthesis,#0096ff
+wbeG,O-Antigen Biosynthesis,#0096ff
+wbeN,O-Antigen Biosynthesis,#0096ff
+potC,Polyamine Import,#14f7f0
+wavA,O-Antigen Biosynthesis,#0096ff
+wbeM,O-Antigen Biosynthesis,#0096ff
+wzt,O-Antigen Biosynthesis,#0096ff
+flgK,Motility,#ff0004
+fliD,Motility,#ff0004
+WT,WT,#000000
+flgE,Motility,#ff0004
+flgM,Motility,#ff0004
+flhG,Motility,#ff0004

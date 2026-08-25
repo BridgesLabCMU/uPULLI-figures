@@ -1,6 +1,6 @@
 """fig4 render: Panel 4C left - normalized biofilm-biomass over time.
 
-Renders FROM the bundled trace table: mean +- SEM biomass(t) for reimaging WT and the three clean
+Renders FROM the bundled trace table: mean +- SD biomass(t) for reimaging WT and the three clean
 deletions, normalized to the reimaging WT median peak. Square axes, no title, functional-group colors.
 
 Reads:  data/biomassOverTime_normWTpeak.csv
@@ -28,8 +28,8 @@ fig, ax = plt.subplots(figsize=(10, 10)); ax.set_box_aspect(1)
 handles = []
 for grp, disp, mk, color in SERIES:
     s = df[df['group'] == grp].sort_values('frame')
-    x, mean, sem = s['frame'].to_numpy(), s['mean'].to_numpy(), s['sem'].to_numpy()
-    ax.fill_between(x, mean - sem, mean + sem, color=color, alpha=0.2, linewidth=0, zorder=2)
+    x, mean, sd = s['frame'].to_numpy(), s['mean'].to_numpy(), s['sd'].to_numpy()
+    ax.fill_between(x, mean - sd, mean + sd, color=color, alpha=0.2, linewidth=0, zorder=2)
     ax.plot(x, mean, color=color, linewidth=2.5, zorder=3)
     ax.scatter(x, mean, marker=mk, s=260, facecolors=color, edgecolors='black', linewidths=1.0, zorder=4)
     handles.append(Line2D([0], [0], marker=mk, linestyle='-', color=color, markerfacecolor=color,

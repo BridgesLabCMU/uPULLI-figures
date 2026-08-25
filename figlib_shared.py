@@ -1,10 +1,11 @@
-"""Shared support library for the uPULLI-figures packages (fig1..fig5).
+"""Shared support library for the paper-figure packages (fig1..fig5).
 
 Figure-agnostic: the functional-group colors, the UMAP feature filter, the house plot style, and a
 `make_config()` factory that builds a per-figure paths namespace. Each figure has a thin `figN/figlib.py`
 that imports this and defines its own `config`, so the panel scripts just `from figlib import config,
 features, plotting`. No dependency on the analysis monorepo.
 """
+import os
 import re
 from pathlib import Path
 from types import SimpleNamespace
@@ -23,7 +24,7 @@ def ensure(*paths):
 
 # ── features: UMAP feature filter + growth/replicate filters (single source of truth) ──
 EXCLUDE_LOCI = ['VC_0185', 'VC_1797', 'VC_2111', 'VC_A1031']
-KEEP_FRAMES = list(range(9, 28))
+KEEP_FRAMES = list(range(9, 28))   # reimaging/canonical window 9-27 (reimaging figs kept here); training embedding-classification pins 9-30 (fig1D/1E)
 DROP_SUFFIXES = ['_skew', '_kurtosis', '_cv']
 NO_GROWTH_FLOOR = 0.005
 MIN_REPLICATES = 5
@@ -109,6 +110,23 @@ FEATURE_UNITS = {
 WHOLE_FEATURE_BASES = ['whole_entropy'] + [f'whole_haralick_{i}' for i in range(13)]
 DENDROGRAM_FEATURE_BASES = WHOLE_FEATURE_BASES + list(ALLOWED_COLONY_BASES)
 
+# ── the three feature families, shared by every figure that colors features by class ──
+# Single source of truth so Fig S2D (bar colors) and Fig S8 (row strip) cannot drift apart.
+FAMILY_COLORS = {'biomass': '#3366ff', 'whole': '#00cc66', 'colony': '#cc33ff', 'other': '#999999'}
+FAMILY_LABELS = {'biomass': 'Biofilm Biomass', 'whole': 'Whole-Image Features',
+                 'colony': 'Colony-level Features'}
+FAMILY_ORDER = ['biomass', 'whole', 'colony']
+
+
+def feature_family(base):
+    """Feature base name -> one of FAMILY_ORDER. Entropy and Haralick are both whole-image."""
+    b = str(base).lower()
+    if b.startswith('biomass'):
+        return 'biomass'
+    if b.startswith('whole_'):
+        return 'whole'
+    return 'colony'
+
 
 def pretty_name(base):
     return FEATURE_PRETTY.get(base, base)
@@ -129,6 +147,8 @@ features = SimpleNamespace(
     biomass_columns=biomass_columns, growth_mask=growth_mask, low_replicate_genes=low_replicate_genes,
     FEATURE_PRETTY=FEATURE_PRETTY, FEATURE_UNITS=FEATURE_UNITS, WHOLE_FEATURE_BASES=WHOLE_FEATURE_BASES,
     DENDROGRAM_FEATURE_BASES=DENDROGRAM_FEATURE_BASES, pretty_name=pretty_name, feature_unit=feature_unit,
+    FAMILY_COLORS=FAMILY_COLORS, FAMILY_LABELS=FAMILY_LABELS, FAMILY_ORDER=FAMILY_ORDER,
+    feature_family=feature_family,
 )
 
 # ── plotting: shared functional groups + house style ──
@@ -146,10 +166,39 @@ HIGHLIGHT_SETS = {
 FUNCTION_COLORS = {'Motility': '#ff0004', 'O-Antigen Biosynthesis': '#0096ff', 'Polyamine Import': '#14f7f0',
                    'Biotin Biosynthesis': '#ff9f1c', 'Pyruvate Flux': '#39ff14', 'Vibriobactin Biosynthesis': '#ba17f6'}
 BACKGROUND_COLOR = '#d0d0d0'
+# Display labels for figure legends. The dict KEYS above stay as the annotation strings matched
+# against the reimaging gene index; only the printed wording changes here. Mirrors
+# v2/common/plotting.FUNCTION_DISPLAY -- keep the two in step.
+FUNCTION_DISPLAY = {'O-Antigen Biosynthesis': 'LPS/O-Ag Biosynthesis'}
+
+
+def functionLabel(func):
+    """Legend label for a functional group (falls back to the key itself)."""
+    return FUNCTION_DISPLAY.get(func, func)
+
+
+HOUSE_FONT = 'Gillius ADF'
+_fontWarned = False
+
+
+def _checkFont():
+    """Warn once if the house font is missing. matplotlib falls back silently, which would otherwise
+    let someone regenerate every panel with different text metrics and never notice."""
+    global _fontWarned
+    if _fontWarned:
+        return
+    _fontWarned = True
+    from matplotlib import font_manager
+    if HOUSE_FONT not in {f.name for f in font_manager.fontManager.ttflist}:
+        print(f"[figlib] '{HOUSE_FONT}' is not installed — matplotlib will fall back silently and text\n"
+              f"         spacing will differ from the published panels (data and coordinates are\n"
+              f"         unaffected). Debian/Ubuntu: apt install fonts-adf-gillius · otherwise:\n"
+              f"         https://arkandis.tuxfamily.org/adffonts.html")
 
 
 def setStyle(extra=None):
-    rc = {'font.family': 'Gillius ADF', 'mathtext.fontset': 'stixsans', 'axes.linewidth': 1.5, 'savefig.dpi': 300}
+    _checkFont()
+    rc = {'font.family': HOUSE_FONT, 'mathtext.fontset': 'stixsans', 'axes.linewidth': 1.5, 'savefig.dpi': 300}
     if extra:
         rc.update(extra)
     mpl.rcParams.update(rc)
@@ -157,14 +206,43 @@ def setStyle(extra=None):
 
 
 plotting = SimpleNamespace(setStyle=setStyle, HIGHLIGHT_SETS=HIGHLIGHT_SETS,
-                           FUNCTION_COLORS=FUNCTION_COLORS, BACKGROUND_COLOR=BACKGROUND_COLOR)
+                           FUNCTION_COLORS=FUNCTION_COLORS, BACKGROUND_COLOR=BACKGROUND_COLOR,
+                           FUNCTION_DISPLAY=FUNCTION_DISPLAY, functionLabel=functionLabel)
 
 
-def make_config(figdir, **extra):
+def make_config(figdir, inputs=(), **extra):
     """Per-figure paths namespace. figdir = the figN/ directory (contains data/, render/, build/, figures/).
-    Standard paths: TABLES (bundled source-data CSVs), FIGURES (output). Extra build-layer inputs
-    (WIDE feature matrix, INDEX, EMB, …) are passed as kwargs by the per-figure figlib shim."""
+
+    Standard paths: TABLES (bundled source-data CSVs), FIGURES (output), and `input(name)` — the
+    resolver for build-layer inputs, which live outside the repository (see inputs.json).
+
+    `inputs` declares the logical names this figure's build layer consumes, purely so the
+    manifest-consistency check can verify them against inputs.json. Resolution itself is LAZY:
+    `config.input(name)` touches the filesystem only when a build script calls it, so render scripts
+    (which import figlib but read only TABLES) work with no inputs downloaded at all.
+    """
     figdir = Path(figdir)
-    base = dict(FIG=figdir, TABLES=figdir / 'data', FIGURES=figdir / 'figures', ensure=ensure)
+
+    def _input_path(name):
+        """Where a logical input lives, without requiring it to exist yet. Use this to WRITE an input
+        that an earlier build step produces (e.g. the step-0 wide tables)."""
+        root = os.environ.get('UPULLI_DATA_ROOT')
+        return Path(root) / name if root else figdir / 'build' / 'inputs' / name
+
+    def _input(name):
+        path = _input_path(name)
+        if not path.exists():
+            raise FileNotFoundError(
+                f'missing build input {name!r}\n'
+                f'  expected at: {path}\n'
+                f'  fix: run `python fetch_data.py` from the repository root to download the\n'
+                f'       deposited inputs, or set UPULLI_DATA_ROOT to an existing deposit checkout.\n'
+                f'  note: only the build/ layer needs these. render/ scripts run from the bundled\n'
+                f'       data/ tables and require no downloads.')
+        return path
+
+    base = dict(FIG=figdir, TABLES=figdir / 'data', FIGURES=figdir / 'figures',
+                ensure=ensure, input=_input, input_path=_input_path,
+                declared_inputs=tuple(inputs))
     base.update(extra)
     return SimpleNamespace(**base)

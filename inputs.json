@@ -1,0 +1,254 @@
+{
+  "deposit": {
+    "name": "uPULLI figure build inputs",
+    "doi": null,
+    "base_url": null,
+    "note": "Fill doi + base_url at deposit time; fetch_data.py reads them."
+  },
+  "inputs": {
+    "training/master_frame_features.csv": {
+      "description": "Training set (8 V. cholerae strains): per-(plate, well, frame) features.",
+      "figures": [
+        "fig2",
+        "figS4",
+        "figS5"
+      ],
+      "bytes": 89313072,
+      "sha256": "9def29e980dc042bb8160c2d73bba45c2681881e29d5f5628dad8ade4c8a87cb"
+    },
+    "training/wide.parquet": {
+      "description": "Training set pivoted wide to <feature>_t<frame>; labelled via training/layout.csv.",
+      "figures": [
+        "fig2",
+        "figS1",
+        "figS2",
+        "figS3"
+      ],
+      "bytes": 41668123,
+      "sha256": "746bb2ac0901112b01738624b0be5bcadbd616eca7717d852da8662729249370"
+    },
+    "training/layout.csv": {
+      "description": "Training set well -> mutant map (plateId, wellId, mutant).",
+      "figures": [
+        "fig2",
+        "figS4",
+        "figS5"
+      ],
+      "bytes": 40609,
+      "sha256": "9bda5ca856a74d25cde498331514987605a604e72802c7537e9348572379d848"
+    },
+    "training/embeddings/cls.npy": {
+      "description": "DINOv2 CLS embeddings for the training set, [nWells, 31, 768] float32.",
+      "figures": [
+        "fig1"
+      ],
+      "bytes": 155418752,
+      "sha256": "0f2dcf9820373d42469e064be8989ab3776f89ae36151df77202e5e95f7b794a"
+    },
+    "training/embeddings/patchmean.npy": {
+      "description": "Mean-pooled DINOv2 patch tokens for the training set, [nWells, 31, 768] float32.",
+      "figures": [
+        "figS1"
+      ],
+      "bytes": 155418752,
+      "sha256": "c16c981cbc477b891bc0fb4738c01d6a32f7146e6b33c541dfc3c04d56fc9d1c"
+    },
+    "training/embeddings/index.csv": {
+      "description": "Row index for the training embedding arrays (row -> plate, well).",
+      "figures": [
+        "fig1",
+        "figS1"
+      ],
+      "bytes": 58485,
+      "sha256": "f95b8b176d70fd47e581475428637dce38ae3a9da8c28e90f7a0e045386a0ffb"
+    },
+    "reimaging/master_frame_features.csv": {
+      "description": "Reimaging atlas: per-(plate, well, frame) features.",
+      "figures": [
+        "fig3"
+      ],
+      "bytes": 222886992,
+      "sha256": "0735bd1c59fda571576a21a61ed09dad597758d5b84302ff0e6a4424022a71a6"
+    },
+    "reimaging/collapsedWide.parquet": {
+      "description": "Reimaging atlas pivoted wide to <feature>_t<frame>, joined to the gene index.",
+      "figures": [
+        "fig3",
+        "fig4",
+        "fig5",
+        "figS4",
+        "figS6",
+        "interactive"
+      ],
+      "bytes": 103159949,
+      "sha256": "3b813e56329c1c0864cf618201aa30ed7086fe1b30e3c5e1d3e1d24813184684"
+    },
+    "reimaging/umapEmbeddings.parquet": {
+      "description": "Reimaging UMAP coordinates over the (n_neighbors, min_dist) grid.",
+      "figures": [
+        "fig3"
+      ],
+      "bytes": 499593,
+      "sha256": "5bfcf019c2e12f8784a444fe277bf6b274839950d29a473a6657ff098e7e0b0f"
+    },
+    "reimaging/geneIndex.csv": {
+      "description": "Reimaging well -> geneLocus / geneName / functional annotation.",
+      "figures": [
+        "fig3"
+      ],
+      "bytes": 4340845,
+      "sha256": "878e31a6dd963bfee5121ae3bbc134e77f47ac7cb96b41580aecb179adf9754a"
+    },
+    "reimaging/embeddings/dendroPcaCentroids.csv": {
+      "description": "Per-mutant centroids in embedding-PC space, input to the S7 dendrograms.",
+      "figures": [
+        "figS7"
+      ],
+      "bytes": 82933,
+      "sha256": "5f3363cd9e46201ead4dbec35f3de1bfd84849955910df0d083ef271b3a7f02e"
+    },
+    "reimaging/embeddings/dendroClusterOrder.csv": {
+      "description": "Leaf order + cluster assignment for the embedding-PC dendrogram.",
+      "figures": [
+        "figS7"
+      ],
+      "bytes": 3701,
+      "sha256": "194649706e6d46564ad15eb7de1c009717b3f0cf8411bd5440fa522e5f2f8b7b"
+    },
+    "reimaging/reimagingResults_10x.csv": {
+      "description": "Reimaging analysis of record: set membership + phenotype per mutant.",
+      "figures": [
+        "figS4"
+      ],
+      "bytes": 21813718,
+      "sha256": "4caa6edb3e05f0c7494b93bdb46ed7906cad41ba065f38cee5ce026c2e967169"
+    },
+    "transposons/results_10x.csv": {
+      "description": "Genome-wide screen analysis of record: per-well Peak/Final/Early/Phenotype. These calls selected the reimaging library and are read as given, never recomputed.",
+      "figures": [
+        "fig3",
+        "figS4",
+        "figS5"
+      ],
+      "bytes": 10868471,
+      "sha256": "99f2697685e1507a91aa3d052aef1b92630e2670bd9d278cae2d6888c29bcc84"
+    },
+    "transposons/master_frame_features.csv": {
+      "description": "Transposon screen: per-(plate, well, frame) features (trajectories for S4A / S5).",
+      "figures": [
+        "figS4",
+        "figS5"
+      ],
+      "bytes": 80299103,
+      "sha256": "f2366eaa626237d22e85abaa643b91f42630ae6c11bd530d1723cb4a7cd345dc"
+    },
+    "cluster/cleanDel_260521_collapsedWide.parquet": {
+      "description": "Clean-deletion plate 260521, pivoted wide.",
+      "figures": [
+        "fig4",
+        "fig5"
+      ],
+      "bytes": 4647000,
+      "sha256": "b51291f497833cc9a02b4cf93a86664f2d15e89168b30c9b81423584a620f398"
+    },
+    "cluster/cleanDel_260522_collapsedWide.parquet": {
+      "description": "Clean-deletion plate 260522, pivoted wide.",
+      "figures": [
+        "fig4",
+        "fig5"
+      ],
+      "bytes": 4664566,
+      "sha256": "93dfdc8cfe752bb60ca724454a78e3e6d8bd4681e37d7e91644f524881cad0b0"
+    },
+    "cluster/cmpd_260522_collapsedWide.parquet": {
+      "description": "Compound-treatment plate 260522, pivoted wide.",
+      "figures": [
+        "fig5"
+      ],
+      "bytes": 5605705,
+      "sha256": "5377aee0a2650d208e25289e69800a6a9a2ed78900e66e70f3e0e1438306f8b0"
+    },
+    "kleb/master_frame_features.csv": {
+      "description": "K. pneumoniae mutant set: per-(plate, well, frame) features (growth filter).",
+      "figures": [
+        "fig5"
+      ],
+      "bytes": 20319377,
+      "sha256": "2ebb148b6d8c94dc7142b94821b73be6006237909d7a300f44ae78d716328867"
+    },
+    "kleb/embeddings/cls.npy": {
+      "description": "DINOv2 CLS embeddings for the K. pneumoniae set.",
+      "figures": [
+        "fig5"
+      ],
+      "bytes": 44236928,
+      "sha256": "544bc6fe0fb3e725c36f23e618b8d0965f4fa322240f40dcd39fcee5f676c262"
+    },
+    "kleb/embeddings/index.csv": {
+      "description": "Row index for the K. pneumoniae embedding array.",
+      "figures": [
+        "fig5"
+      ],
+      "bytes": 20365,
+      "sha256": "92ef84d5f1420097f70d8980b992fd569ca4f26742cad3c6e760380da00a01e9"
+    },
+    "multispecies/embeddings/cls_10X.npy": {
+      "description": "DINOv2 CLS embeddings for the 8-species panel, 10X wells.",
+      "figures": [
+        "fig5"
+      ],
+      "bytes": 30965888,
+      "sha256": "d1b2c85a30f2772fa0eb9690ce7aa8dd3d7d6bc00d316a0e6900060b58337271"
+    },
+    "multispecies/embeddings/index_10X.csv": {
+      "description": "Row index for the multispecies 10X embedding array.",
+      "figures": [
+        "fig5"
+      ],
+      "bytes": 20014,
+      "sha256": "3fca45ca075b307517b7fe52848aeb012274f8fa84804315351616f29d3d990f"
+    },
+    "rnaseq/": {
+      "description": "Directory of per-strain differential-expression tables (<strain>_allGenes.csv): the Fig 4E biofilm-gene heatmap and the Fig S8B-D volcano plots. Sequencing data are deposited separately under their own accession.",
+      "figures": [
+        "fig4",
+        "figS8"
+      ],
+      "bytes": null,
+      "sha256": null,
+      "directory": true
+    },
+    "reimaging/thumbnails112/": {
+      "bytes": 12000000,
+      "sha256": null,
+      "figures": [
+        "interactive"
+      ],
+      "description": "Peak-biofilm-biomass thumbnail pack: one 112px grayscale JPEG per reimaging well, keyed <plate-well>_t<peakFrame>.jpg, plus manifest.csv. Inlined as base64 by the interactive plots."
+    },
+    "reimaging/thumbnailsTimelapse/": {
+      "bytes": 30000000,
+      "sha256": null,
+      "figures": [
+        "interactive"
+      ],
+      "description": "Timelapse thumbnail pack: every frame for 3 representative wells per mutant, 96px grayscale JPEG, keyed <plate-well>_t<frame>.jpg, plus manifest.csv. Used by Interactive Plot 3 (build/IP3_interactiveDendrogramTimelapse.py)."
+    },
+    "lux/Lum.csv": {
+      "description": "Plate-reader luminescence timecourse (41 hourly timepoints x wells A1..H12) for the PvpsL-lux reporter in WT and the clean-deletion mutants, 251212_lux_37C_Shaking. Paired with lux/OD.csv.",
+      "figures": [
+        "figS8"
+      ],
+      "bytes": 12865,
+      "sha256": "6ccbab7bbcbb7f2832c3ad2f1203edd877eef1fdacf0d303a8d181be98283e72"
+    },
+    "lux/OD.csv": {
+      "description": "Matched optical-density timecourse for lux/Lum.csv (same plate, same 41 timepoints); RLU = Lum/OD per well per timepoint.",
+      "figures": [
+        "figS8"
+      ],
+      "bytes": 19152,
+      "sha256": "e9ba1e131ba6dc07df35702d3a667cef0c9ed6912b3c0c7b0dd5645b7f30385c"
+    }
+  }
+}

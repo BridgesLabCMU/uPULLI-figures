@@ -57,7 +57,7 @@ outDir = config.ensure(config.FIGURES)
 stem = f'reimagingLandscape_nn{NN}_md{MD:.2f}'
 
 # build coordinates (nn=10, md=0.1 only)
-wide = pd.read_parquet(config.WIDE)
+wide = pd.read_parquet(config.input('reimaging/collapsedWide.parquet'))
 wide = wide[wide['mutant'].notna()].reset_index(drop=True)
 if 'geneLocus' in wide.columns:
     wide = wide[~wide['geneLocus'].isin(features.EXCLUDE_LOCI)].reset_index(drop=True)

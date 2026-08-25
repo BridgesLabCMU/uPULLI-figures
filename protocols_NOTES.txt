@@ -1,0 +1,35 @@
+OPENTRONS LIQUID-HANDLING PROTOCOLS
+
+The archive opentrons-protocols.zip contains the protocols used to prepare imaging
+plates for this study. Each protocol, and the dataset it produced:
+
+
+  Tn imaging, wells 1-2.json
+      Initial genome-wide imaging of the transposon library (~2,850 mutants).
+      Figure 3A; Figures S4A and S5; Data S1.
+
+  Darin plate_ dilution wells1-4.json
+      Replicate re-imaging of the mutants selected from that screen
+      (158 mutants, 3,669 wells).
+      Figures 3B and 3D; Figures S6 and S7; Interactive Plots 1-3.
+
+  Kleb_ Tn-imaging_wells1-2.json
+      Klebsiella pneumoniae transposon mutants.
+      Figure 5B.
+
+  Sophia_3_column_3_plate_200ul_media_update.py
+      Eight-species bacterial panel.
+      Figure 5C.
+
+
+PLATES PREPARED BY HAND
+
+The compound-treatment and clean-deletion plates were pipetted by hand rather than
+by robot, so no protocol is included for them:
+
+  260522_hand_cmpdTreatment_1                          Figure 5A
+  260521_hand_cleanDeletion_1, 260522_hand_cleanDeletion_2   Figures 4A and 4C
+
+Robot-prepared versions of both experiments were run earlier but are not the data
+shown in the paper. The robot_ or hand_ prefix in an experiment identifier records
+which preparation was used.

@@ -1,0 +1,159 @@
+mutant,annotation,color
+pta,Other,#d0d0d0
+VC_1319,Other,#d0d0d0
+VC_A1099,Other,#d0d0d0
+argH,Other,#d0d0d0
+grx,Other,#d0d0d0
+groS2,Other,#d0d0d0
+VC_1320,Other,#d0d0d0
+VC_A0527,Other,#d0d0d0
+VC_2524,Other,#d0d0d0
+VC_1295,Other,#d0d0d0
+VC_2714,Other,#d0d0d0
+trmJ,Other,#d0d0d0
+VC_2224,Other,#d0d0d0
+WT,WT,#000000
+VC_0289,Other,#d0d0d0
+epsC,Other,#d0d0d0
+VC_A0620,Other,#d0d0d0
+proQ,Other,#d0d0d0
+VC_1414,Other,#d0d0d0
+thiI,Other,#d0d0d0
+rjg,Other,#d0d0d0
+VC_1154,Other,#d0d0d0
+rimO,Other,#d0d0d0
+pstB1,Other,#d0d0d0
+VC_0134,Other,#d0d0d0
+VC_1652,Other,#d0d0d0
+VC_1710,Other,#d0d0d0
+aroQ,Other,#d0d0d0
+guaB,Other,#d0d0d0
+flgE,Motility,#ff0004
+mltF,Other,#d0d0d0
+VC_1885,Other,#d0d0d0
+flhG,Motility,#ff0004
+VC_A0536,Other,#d0d0d0
+nusB,Other,#d0d0d0
+VC_A0001,Other,#d0d0d0
+VC_0405,Other,#d0d0d0
+VC_1581,Other,#d0d0d0
+VC_A0726,Other,#d0d0d0
+VC_1423,Other,#d0d0d0
+VC_2627,Other,#d0d0d0
+VC_2523,Other,#d0d0d0
+VC_A0005,Other,#d0d0d0
+VC_A0328,Other,#d0d0d0
+VC_A0340,Other,#d0d0d0
+VC_A0588,Other,#d0d0d0
+aroE,Other,#d0d0d0
+flgM,Motility,#ff0004
+glmS,Other,#d0d0d0
+VC_2271,Other,#d0d0d0
+VC_A0187,Other,#d0d0d0
+VC_A0940,Other,#d0d0d0
+VC_A1081,Other,#d0d0d0
+VC_0929,Other,#d0d0d0
+VC_A0146,Other,#d0d0d0
+pabC,Other,#d0d0d0
+VC_2485,Other,#d0d0d0
+recO,Other,#d0d0d0
+VC_2756,Other,#d0d0d0
+rluE,Other,#d0d0d0
+VC_2441,Other,#d0d0d0
+trpR,Other,#d0d0d0
+lexA,Other,#d0d0d0
+VC_0113,Other,#d0d0d0
+VC_0161,Other,#d0d0d0
+VC_A0759,Other,#d0d0d0
+VC_0196,Other,#d0d0d0
+VC_1462,Other,#d0d0d0
+flgK,Motility,#ff0004
+dnaN,Other,#d0d0d0
+ectA,Other,#d0d0d0
+VC_0449,Other,#d0d0d0
+mutH,Other,#d0d0d0
+VC_0462,Other,#d0d0d0
+glyQ,Other,#d0d0d0
+wzt,O-Antigen Biosynthesis,#0096ff
+wavA,O-Antigen Biosynthesis,#0096ff
+wbeM,O-Antigen Biosynthesis,#0096ff
+argF,Other,#d0d0d0
+potC,Polyamine Import,#14f7f0
+pilC,Other,#d0d0d0
+VC_1498,Other,#d0d0d0
+VC_A0999,Other,#d0d0d0
+VC_0419,Other,#d0d0d0
+VC_1350,Other,#d0d0d0
+VC_A0840,Other,#d0d0d0
+fliJ,Motility,#ff0004
+cheW,Motility,#ff0004
+flgA,Motility,#ff0004
+VC_0399,Other,#d0d0d0
+manB,O-Antigen Biosynthesis,#0096ff
+wbeG,O-Antigen Biosynthesis,#0096ff
+wbeN,O-Antigen Biosynthesis,#0096ff
+cdgJ,Other,#d0d0d0
+rsmJ,Other,#d0d0d0
+ung,Other,#d0d0d0
+hslO,Other,#d0d0d0
+VC_1909,Other,#d0d0d0
+VC_2522,Other,#d0d0d0
+fliD,Motility,#ff0004
+greA,Other,#d0d0d0
+VC_1933,Other,#d0d0d0
+VC_2311,Other,#d0d0d0
+VC_1291,Other,#d0d0d0
+VC_2453,Other,#d0d0d0
+argR,Other,#d0d0d0
+rluD,Other,#d0d0d0
+lipA,Pyruvate Flux,#39ff14
+pdhE2,Pyruvate Flux,#39ff14
+gshB,Other,#d0d0d0
+VC_2270,Other,#d0d0d0
+vibB,Vibriobactin Biosynthesis,#ba17f6
+flhA,Motility,#ff0004
+fliL,Motility,#ff0004
+flaA,Motility,#ff0004
+fliQ,Motility,#ff0004
+fliP,Motility,#ff0004
+fliS,Motility,#ff0004
+flhB,Motility,#ff0004
+fliR,Motility,#ff0004
+flrB,Motility,#ff0004
+flgB,Motility,#ff0004
+flgF,Motility,#ff0004
+flgD,Motility,#ff0004
+fliA,Motility,#ff0004
+flrA,Motility,#ff0004
+flgT,Motility,#ff0004
+fliE,Motility,#ff0004
+wbeL,O-Antigen Biosynthesis,#0096ff
+VC_1359,Other,#d0d0d0
+manA,O-Antigen Biosynthesis,#0096ff
+manC,O-Antigen Biosynthesis,#0096ff
+VC_A0171,Other,#d0d0d0
+VC_A0785,Other,#d0d0d0
+VC_A0079,Other,#d0d0d0
+lpxM,O-Antigen Biosynthesis,#0096ff
+potD1,Polyamine Import,#14f7f0
+potA,Polyamine Import,#14f7f0
+potB,Polyamine Import,#14f7f0
+wbeT,O-Antigen Biosynthesis,#0096ff
+flgO,Motility,#ff0004
+flgP,Motility,#ff0004
+VC_A0800,Other,#d0d0d0
+pckA,Other,#d0d0d0
+VC_1887,Other,#d0d0d0
+bioA,Biotin Biosynthesis,#ff9f1c
+bioF,Biotin Biosynthesis,#ff9f1c
+VC_2718; VC_2719,Other,#d0d0d0
+bioC,Biotin Biosynthesis,#ff9f1c
+bioD,Biotin Biosynthesis,#ff9f1c
+VC_0900,Other,#d0d0d0
+fadR,Other,#d0d0d0
+mrcA,Other,#d0d0d0
+wavL,O-Antigen Biosynthesis,#0096ff
+VC_0745,Other,#d0d0d0
+nfuA,Other,#d0d0d0
+VC_1003,Other,#d0d0d0
+glyA1,Other,#d0d0d0

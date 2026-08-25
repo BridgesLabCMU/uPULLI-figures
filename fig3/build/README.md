@@ -6,24 +6,23 @@ tables: reshaping the feature set into the wide table (step 0), then the UMAP fi
 peak-biomass feature matrices, and the PCA→Ward clustering. Upstream of step 0 (raw images → processed
 images → the feature set) is the µPULLI pipeline in a separate repository — see `../README.md`.
 
-## Inputs (obtain from KiltHub, then point figlib at them)
+## Inputs
 
-- `master_frame_features.csv`: the original full per-(well, frame) feature set (µPULLI output);
-  input to step 0.
-- `reimagingIndex.csv`: gene locus/name/function annotations.
-- `reimaging_umapEmbeddings.parquet`: precomputed UMAP embeddings (bundled in `../data/`, used by the
-  centroid/per-gene builders so they need only the small file).
-- `reimaging_collapsedWide.parquet`: the wide table; produced by step 0, then used by 3A/3B/3C.
-
-Set the paths for a standalone checkout:
+Fetch them once, from the repository root:
 
 ```bash
-export FIG3_MASTER_FRAME=/path/to/master_frame_features.csv
-export FIG3_REIMAGING_INDEX=/path/to/reimagingIndex.csv
-export FIG3_WIDE_TABLE=/path/to/reimaging_collapsedWide.parquet   # where step 0 writes / 3* read
+python fetch_data.py fig3
 ```
 
-(In the original monorepo these default to the in-repo/`/mnt` paths, so the scripts run without env vars.)
+That populates `build/inputs/` with the logical names these scripts resolve through
+`config.input(...)` — see [`../../INPUTS.md`](../../INPUTS.md) for sizes and contents:
+
+- `reimaging/master_frame_features.csv` — per-(well, frame) feature set; input to step 0.
+- `reimaging/geneIndex.csv` — gene locus / name / function annotations.
+- `reimaging/collapsedWide.parquet` — the wide table; written by step 0, read by 3A/3B/3D.
+- `reimaging/umapEmbeddings.parquet` — UMAP coordinates, used by the centroid/per-gene builders.
+
+Already have the deposit unpacked elsewhere? `export UPULLI_DATA_ROOT=/path/to/deposit` instead.
 
 ## Run
 
@@ -31,9 +30,9 @@ export FIG3_WIDE_TABLE=/path/to/reimaging_collapsedWide.parquet   # where step 0
 python build/0_buildCollapsedWide.py                       # master_frame_features.csv -> reimaging_collapsedWide.parquet (WIDE)
 python build/3B_reimagingUmap_functionalAnnotations.py     # -> data/reimagingLandscape_..._coords.csv (refits UMAP)
 python build/3A_reimagingUmap_coloredByBiomass.py          # -> data/coloredByBiomass..._coords.csv
-python build/3Ctop_reimagingUmap_centroidsByFunction.py    # -> data/centroidsByFunction..._centroids.csv
-python build/3Cbottom_reimagingUmap_centroidsByLocus.py    # -> data/centroidsByLocus..._centroids.csv
-python build/3C_generateDendogramHeatmaps-withPCA.py       # -> data/functional_*.csv + linkage.npy
+python build/3Btop_reimagingUmap_centroidsByFunction.py    # -> data/centroidsByFunction..._centroids.csv
+python build/3Bbottom_reimagingUmap_centroidsByLocus.py    # -> data/centroidsByLocus..._centroids.csv
+python build/3D_generateDendogramHeatmaps-withPCA.py       # -> data/functional_*.csv + linkage.npy
 python build/reimagingUmap_perGenePdf.py                   # -> data/reimagingUmap_..._perGene_coords.csv
 ```
 

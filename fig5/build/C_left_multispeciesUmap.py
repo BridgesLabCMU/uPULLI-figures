@@ -4,7 +4,7 @@ Stacks DINOv2 CLS embeddings over frames 9-23 for the 100% LB wells at 10X, Stan
 fits UMAP (nn=10, md=0.1, random_state=42, euclidean) - the direct (non-PCA) embedding manifold used
 for the panel. Species + LB condition come from the embedding index.
 
-Reads:  config.MULTI_CLS (multispecies_10X_cls.npy), config.MULTI_EMBIDX
+Reads:  config.input('multispecies/embeddings/cls_10X.npy') (multispecies_10X_cls.npy), config.input('multispecies/embeddings/index_10X.csv')
 Writes: data/multispecies_100pctLB_10X_umap_coords.csv   (species, plateId, wellId, umap1, umap2)
 """
 import sys
@@ -20,8 +20,8 @@ from figlib import config, MULTI_FRAMES
 NN, MD, SEED = 10, 0.1, 42
 COND = '100% LB'
 
-cls = np.load(config.MULTI_CLS)
-idx = pd.read_csv(config.MULTI_EMBIDX)
+cls = np.load(config.input('multispecies/embeddings/cls_10X.npy'))
+idx = pd.read_csv(config.input('multispecies/embeddings/index_10X.csv'))
 m = (idx['LB_condition'] == COND).to_numpy()
 sub = idx[m].reset_index(drop=True)
 rep = cls[m][:, MULTI_FRAMES, :].reshape(int(m.sum()), -1).astype(np.float32)

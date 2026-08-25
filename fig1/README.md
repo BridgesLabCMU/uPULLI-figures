@@ -14,7 +14,7 @@ render/              draw each panel from data/  -> figures/   (what you run)
 build/               regenerate data/ from the CLS embeddings (KiltHub; heavy, optional)
 figures/             rendered PNG/SVG output
 ```
-(Shared `requirements.txt` / `environment.yml` / `LICENSE` live at the repository root.)
+(Shared `requirements.txt` / `environment.yml` / `LICENSE` live at the `paper-figures/` root.)
 
 ## From raw data to panels (full chain)
 

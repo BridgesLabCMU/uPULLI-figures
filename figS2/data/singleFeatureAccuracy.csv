@@ -1,0 +1,28 @@
+featureBase,prettyName,family,balancedAccuracy
+whole_haralick_7,Global Texture Sum Entropy,whole,0.9731334005376345
+whole_entropy,Global Image Entropy,whole,0.9629687499999998
+whole_haralick_6,Global Texture Sum Variance,whole,0.959702620967742
+whole_haralick_3,Global Texture Variance,whole,0.9582190860215054
+whole_haralick_12,Global Texture IMC2,whole,0.9401159274193549
+biomass,Biofilm Biomass,biomass,0.9392355510752688
+colony_bgCV,Background Intensity Variability (CV),colony,0.9277973790322581
+whole_haralick_8,Global Texture Entropy,whole,0.9252150537634409
+whole_haralick_2,Global Texture Correlation,whole,0.9203225806451614
+nColonies,Number of Colonies,colony,0.917301747311828
+colony_meanIntensity_mean,Average Colony Intensity,colony,0.9084290994623656
+whole_haralick_11,Global Texture IMC1,whole,0.9028242607526882
+colony_mstEdgeMax_um_mean,Largest Inter-Colony Distance,colony,0.8990020161290322
+colony_nnDistance1_um_std,Nearest-Neighbor Distance Variability,colony,0.8926192876344088
+whole_haralick_0,Global Texture Energy,whole,0.8845900537634409
+colony_centroidOffset_um_mean,Average Colony Radial Offset,colony,0.8807140456989248
+colony_area_um2_mean,Average Colony Area,colony,0.8260265456989246
+colony_area_um2_std,Colony Area Variability,colony,0.8153393817204302
+colony_nnDistance1_um_mean,Mean Nearest-Neighbor Distance,colony,0.8013676075268817
+colony_majorAxisLength_um_mean,Average Colony Major Axis Length,colony,0.7902738575268817
+colony_eccentricity_mean,Average Colony Eccentricity,colony,0.7327469758064517
+whole_haralick_1,Global Texture Contrast,whole,0.7007493279569893
+whole_haralick_10,Global Texture Difference Entropy,whole,0.6941733870967742
+whole_haralick_9,Global Texture Difference Variance,whole,0.6812567204301077
+whole_haralick_4,Global Texture Homogeneity,whole,0.6643783602150539
+colony_meanIntensity_kurtosis,Colony Intensity Tailedness,colony,0.650198252688172
+whole_haralick_5,Global Texture Sum Average,whole,0.46693548387096767

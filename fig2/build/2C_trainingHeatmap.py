@@ -5,7 +5,7 @@ Per mutant, samples every feature (biomass + whole entropy/haralick + the 12 col
 mutant's peak-biomass frame, medianed across replicates, then z-scored across the 8 mutants per feature
 row. Fixed mutant order (STRAIN_ORDER); rows sorted into the canonical feature order.
 
-Reads:  config.WIDE (training_wide.parquet)
+Reads:  config.input('training/wide.parquet') (training_wide.parquet)
 Writes: data/trainingHeatmap_peakBiomass_featureMatrix.csv  +  _peakFrames.csv
 """
 import sys
@@ -37,7 +37,7 @@ def sortKey(b):
     return (3, idx)
 
 
-df = pd.read_parquet(config.WIDE)
+df = pd.read_parquet(config.input('training/wide.parquet'))
 df = df[df['mutant'].isin(STRAIN_ORDER)].reset_index(drop=True)
 
 bases = set()
@@ -67,7 +67,17 @@ for base in featureBases:
         vals.append(g[col].median() if col and col in g.columns else np.nan)
     rows.append(vals)
 mat = pd.DataFrame(rows, index=featureBases, columns=STRAIN_ORDER)
-z = mat.sub(mat.mean(axis=1), axis=0).div(mat.std(axis=1).replace(0, np.nan), axis=0).fillna(0)
+
+# Z-score each feature across the mutants. Row mean/std skip missing values, so a strain that lacks a
+# measurement does not distort the others' scores. Genuinely missing cells stay NaN and are drawn grey:
+# vpsL forms no microcolonies, so all 12 colony-segmentation features are undefined for it, and showing
+# those as 0 would read as "average" for something it does not have.
+sd = mat.std(axis=1)
+z = mat.sub(mat.mean(axis=1), axis=0).div(sd.replace(0, np.nan), axis=0)
+constant = sd.fillna(0).eq(0)                       # feature identical across mutants -> 0/0
+z[constant] = z[constant].where(mat[constant].isna(), 0.0)
+print(f'missing cells preserved as NaN: {int(z.isna().sum().sum())} '
+      f'({", ".join(f"{m}={int(n)}" for m, n in z.isna().sum().items() if n)})')
 
 config.ensure(config.TABLES)
 z.to_csv(config.TABLES / 'trainingHeatmap_peakBiomass_featureMatrix.csv')

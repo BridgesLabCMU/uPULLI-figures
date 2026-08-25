@@ -1,8 +1,18 @@
 #!/usr/bin/env python3
-"""fig2 render — Panel 2C: peak-biomass-frame feature heatmap for the 8 training mutants.
+"""fig2 render — Panel 2C: peak-biomass-frame feature heatmap with the FEATURES clustered.
 
-Renders FROM the bundled z-scored feature matrix (features x mutants). RdBu_r (-3..3), fixed mutant
-order, feature-group brackets (colony / whole-image haralick) on the left. No dendrogram.
+Each cell is a feature's median across replicates at that mutant's own peak-biomass frame, z-scored
+across the eight mutants (the bundled matrix). Rows are clustered by Ward linkage on Euclidean
+distances between those z-score profiles -- already standardized, so no further scaling is applied --
+which groups the measurements that behave alike across the mutant panel. Columns stay in the fixed
+strain order; mutants are deliberately NOT re-clustered.
+
+Clustering reorders the rows, so contiguous feature-family brackets no longer apply; a feature-family
+color strip on the right carries that information instead, using the same three classes and colors as
+Fig. S2D. Where families interleave, that is the result.
+
+The family-ordered heatmap this replaced (same matrix, fixed row order, no dendrogram) is still
+renderable as 2C_trainingHeatmap_familyOrder.py.
 
 Reads:  data/trainingHeatmap_peakBiomass_featureMatrix.csv
 Writes: figures/2C_trainingHeatmap.{png,svg}
@@ -17,10 +27,14 @@ import pandas as pd
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
-from figlib import config, plotting, STRAIN_ORDER, DISPLAY_NAMES
+from matplotlib.lines import Line2D
+from scipy.cluster.hierarchy import dendrogram, linkage
+from scipy.spatial.distance import pdist
+from figlib import (config, plotting, STRAIN_ORDER, DISPLAY_NAMES,
+                    FAMILY_COLORS, FAMILY_LABELS, FAMILY_ORDER, featureFamily)
 
 plotting.setStyle(extra={'font.size': 30, 'axes.titlesize': 34, 'axes.labelsize': 30,
-                         'xtick.labelsize': 30, 'ytick.labelsize': 28, 'axes.linewidth': 2})
+                         'xtick.labelsize': 36, 'ytick.labelsize': 34, 'axes.linewidth': 2})
 cellSize = 0.7
 
 canonHaralick = ['energy', 'contrast', 'correlation', 'variance', 'inverse_difference_moment', 'sum_average',
@@ -37,10 +51,6 @@ shortColony = {'biomass': r'Biofilm Biomass (a.u.)', 'nColonies': r'Colonies (co
                'colony_nnDistance1_um_mean': r'Nearest Neighbor ($\mu$m)', 'colony_nnDistance1_um_std': r'NN Variability ($\mu$m)'}
 
 
-def featureGroup(b):
-    return 'biomass' if b == 'biomass' else 'haralick' if 'haralick' in b else 'entropy' if 'entropy' in b else 'colony'
-
-
 def prettyFeatureName(b):
     if b in shortColony:
         return shortColony[b]
@@ -54,54 +64,89 @@ def prettyFeatureName(b):
     return b
 
 
-def drawBracket(ax, y0, y1, label):
-    ax.plot([0.80, 0.80], [y0, y1], lw=3, color='black', clip_on=False)
-    ax.plot([0.80, 0.97], [y0, y0], lw=3, color='black', clip_on=False)
-    ax.plot([0.80, 0.97], [y1, y1], lw=3, color='black', clip_on=False)
-    ax.text(0.38, (y0 + y1) / 2, label, rotation=90, va='center', ha='center', fontsize=30, transform=ax.transData, clip_on=False)
-
-
+# ── cluster the FEATURES (rows); columns keep the fixed strain order ──────────
 heat = pd.read_csv(config.TABLES / 'trainingHeatmap_peakBiomass_featureMatrix.csv', index_col=0)
 heat = heat[[m for m in STRAIN_ORDER if m in heat.columns]]
+# Cluster on the available information: undefined cells (vpsL's colony features) are treated as
+# the row mean, which is 0 in z-space. They are still DRAWN as missing (grey), not as 0.
+Z = linkage(pdist(np.nan_to_num(heat.to_numpy(dtype=float), nan=0.0), metric='euclidean'),
+            method='ward')
+dend = dendrogram(Z, no_plot=True)
+rowOrder = dend['leaves']
+heat = heat.iloc[rowOrder]
 nF, nM = heat.shape
+families = [featureFamily(b) for b in heat.index]
+print(f'{nF} features clustered (Ward/euclidean) x {nM} mutants')
+
+# ── layout: dendrogram | labels | heatmap | family strip | colorbar | legend ──
+dendIn, stripIn, padIn = 2.2, 0.35, 0.3
 fw = nM * cellSize + 9
 fh = nF * cellSize + 4
-fig = plt.figure(figsize=(fw, fh), dpi=200)
+def widestTextIn(labels, fontsize):
+    """Widest rendered label, in inches. Measured rather than estimated from character counts, so
+    mathtext (Delta, italics, superscripts) is sized correctly and the dendrogram can sit right up
+    against the label column without a slack gap."""
+    probe = plt.figure(figsize=(1, 1), dpi=200)
+    renderer = probe.canvas.get_renderer()
+    widest = max((probe.text(0, 0, s, fontsize=fontsize).get_window_extent(renderer=renderer).width
+                  for s in labels), default=0.0) / probe.dpi
+    plt.close(probe)
+    return widest
 
-maxFeatChars = max((len(re.sub(r'\$|\\mathit|\{|\}|\^|_', '', prettyFeatureName(b))) for b in heat.index), default=10)
-bracketIn, padIn = 1.4, 0.3
-yLabelIn = maxFeatChars * (30 / 72.0) * 0.46
-maxMutChars = max((len(re.sub(r'\$|\\mathit|\{|\}|\\Delta|\^|_', '', DISPLAY_NAMES[m])) for m in heat.columns), default=6)
-mutLabelIn = maxMutChars * (30 / 72.0) * 0.55 * 0.71
-left, bottom = (bracketIn + yLabelIn + padIn) / fw, (mutLabelIn + padIn) / fh
+yLabelIn = widestTextIn([prettyFeatureName(b) for b in heat.index], mpl.rcParams['ytick.labelsize'])
+mutLabelIn = widestTextIn([DISPLAY_NAMES[m] for m in heat.columns], mpl.rcParams['xtick.labelsize']) * 0.71
+# dendGapIn = clearance between the dendrogram leaves and the longest feature label
+dendGapIn = 0.25
+leftIn = dendIn + dendGapIn + yLabelIn + padIn
+left, bottom = leftIn / fw, (mutLabelIn + padIn) / fh
 heatW, heatH = (nM * cellSize) / fw, (nF * cellSize) / fh
 
+fig = plt.figure(figsize=(fw, fh), dpi=200)
 axH = fig.add_axes([left, bottom, heatW, heatH])
-axC = fig.add_axes([left + heatW + 0.02, bottom, 0.02, heatH])
-axBracket = fig.add_axes([0.35 / fw, bottom, bracketIn / fw, heatH])
+axD = fig.add_axes([(leftIn - yLabelIn - dendGapIn - dendIn) / fw, bottom, dendIn / fw, heatH])
+axS = fig.add_axes([left + heatW + padIn / fw, bottom, stripIn / fw, heatH])
+cbarX = left + heatW + (2 * padIn + stripIn) / fw
+cbarW = 0.035
+axC = fig.add_axes([cbarX, bottom, cbarW, heatH])
 
-im = axH.imshow(heat.values, cmap='RdBu_r', vmin=-3, vmax=3, interpolation='nearest', aspect='auto')
+# dendrogram with the LEAVES on the inside edge, so each leaf points at its heatmap row
+# (merge distance increases leftwards; the root is at the far left).
+icoord, dcoord = np.array(dend['icoord']), np.array(dend['dcoord'])
+yMin, yMax = icoord.min(), icoord.max()
+scaleY = (nF - 1) / (yMax - yMin)
+maxD = dcoord.max()
+for xs, ys in zip(dcoord, icoord):
+    axD.plot(xs, [(y - yMin) * scaleY for y in ys], color='black', linewidth=2.5)
+axD.set_xlim(maxD * 1.02, -maxD * 0.02)
+axD.set_ylim(nF - 0.5, -0.5)
+axD.axis('off')
+
+axS.imshow(np.array([[FAMILY_ORDER.index(f)] for f in families]), aspect='auto',
+           cmap=mpl.colors.ListedColormap([FAMILY_COLORS[k] for k in FAMILY_ORDER]),
+           vmin=0, vmax=len(FAMILY_ORDER) - 1)
+axS.axis('off')
+
+cmap = mpl.colormaps['RdBu_r'].copy(); cmap.set_bad('#b0b0b0')
+im = axH.imshow(np.ma.masked_invalid(heat.values), cmap=cmap, vmin=-3, vmax=3,
+                interpolation='nearest', aspect='auto')
+# Labels stay on the LEFT, in the column the layout reserves for them (yLabelIn, between the
+# dendrogram and the heatmap). Moving them right collides with the family strip and colorbar.
 axH.set_yticks(np.arange(nF)); axH.set_yticklabels([prettyFeatureName(b) for b in heat.index])
 axH.set_xticks(np.arange(nM)); axH.set_xticklabels([DISPLAY_NAMES[m] for m in heat.columns], rotation=45, ha='right')
-axH.tick_params(axis='x', pad=4)
+axH.tick_params(axis='x', pad=4); axH.tick_params(axis='y', pad=6)
 axH.set_title('Peak Biofilm Biomass Frame', pad=24, fontweight='bold')
 fig.colorbar(im, cax=axC).set_label('Z-score')
 
-axBracket.set_xlim(0, 1); axBracket.set_ylim(nF - 0.5, -0.5); axBracket.axis('off')
-groups = [featureGroup(b) for b in heat.index]
-
-
-def rng(name):
-    idx = [i for i, g in enumerate(groups) if g == name]
-    return (min(idx), max(idx)) if idx else None
-
-
-if (r := rng('colony')):
-    drawBracket(axBracket, r[0], r[1], 'Colony Segmentation-\nDerived Features')
-if (r := rng('haralick')):
-    drawBracket(axBracket, r[0], r[1], 'Whole Image\nHaralick Features')
+present = [k for k in FAMILY_ORDER if k in set(families)]
+legendX = 1.0 + ((cbarX + cbarW + 0.012) - (left + heatW)) / heatW   # just right of the colorbar
+axH.legend(handles=[Line2D([0], [0], marker='s', linestyle='none', markersize=16,
+                           markerfacecolor=FAMILY_COLORS[k], markeredgecolor='black', label=FAMILY_LABELS[k])
+                    for k in present],
+           frameon=False, fontsize=24, loc='upper left', bbox_to_anchor=(legendX, 1.0))
 
 out = config.ensure(config.FIGURES) / '2C_trainingHeatmap'
 fig.savefig(str(out) + '.png', dpi=300, bbox_inches='tight')
 fig.savefig(str(out) + '.svg', bbox_inches='tight')
-print(f'Saved: {out}.png  ({nF} features x {nM} mutants)')
+plt.close(fig)
+print(f'Saved: {out}.png')
+print('  cluster order: ' + ', '.join(prettyFeatureName(b) for b in heat.index[:6]) + ' ...')

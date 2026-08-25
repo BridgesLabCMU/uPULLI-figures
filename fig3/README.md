@@ -16,17 +16,17 @@ render/              draw each panel from data/  → figures/   (what you run)
 build/               regenerate data/ from the original feature set (KiltHub; optional)
 figures/             rendered PNG/SVG/PDF output
 ```
-(Shared `requirements.txt` / `environment.yml` / `LICENSE` live at the repository root.)
+(Shared `requirements.txt` / `environment.yml` / `LICENSE` live at the `paper-figures/` root.)
 
 ## Reproduce the figures from processed numerical data (no raw data)
 
 ```bash
-conda env create -f environment.yml && conda activate fig3   # or: pip install -r requirements.txt
-python render/3A_reimagingUmap_coloredByBiomass.py           # Panel 3A
+conda env create -f environment.yml && conda activate paper-figures   # or: pip install -r requirements.txt
+python render/3A_rankedTransposonBiomass.py                   # Panel 3A (+ its separate legend)
 python render/3B_reimagingUmap_functionalAnnotations.py      # Panel 3B (main landscape)
-python render/3Ctop_reimagingUmap_centroidsByFunction.py     # Panel 3B top inset
-python render/3Cbottom_reimagingUmap_centroidsByLocus.py     # Panel 3B bottom inset
-python render/3C_dendrogramHeatmap.py                        # Panel 3D (dendrogram + heatmap)
+python render/3Btop_reimagingUmap_centroidsByFunction.py     # Panel 3B top inset
+python render/3Bbottom_reimagingUmap_centroidsByLocus.py     # Panel 3B bottom inset
+python render/3D_dendrogramHeatmap.py                        # Panel 3D (dendrogram + heatmap)
 python render/reimagingUmap_perGenePdf.py                    # Supplement (per-gene PDF)
 ```
 
@@ -58,13 +58,30 @@ the KiltHub feature set — see `build/README.md`. Fill the bracketed deposit ID
 
 ### Panels → scripts → tables
 
+**3A** was previously supplemental (Fig S4D) and now opens Figure 3, replacing the UMAP-colored-by-peak-
+biomass panel that used to be 3A. That retired panel now lives in **`archive/`**
+(`archive/{render,build}/reimagingUmap_coloredByBiomass.py`) — still runnable for reference, but not a
+panel; its source table `coloredByBiomassNormWT_plasma_nn10_md0.10_coords.csv` stays in `data/` so it
+can render. **3C** is
+representative microscopy and has no script here — those stills come from the image tree via
+`v2/reimaging/representativeImages/pullRepresentativeFrames.py`, outside this package.
+
+3A's two tables are produced by **fig3's own** build step from `transposons/results_10x.csv`, the screen
+analysis of record: the calls are read as given (they selected the reimaging library, so they are a fixed
+historical result), and `B_max`/`B_min`/`maxFinal` are recovered as the midpoints of the gaps that bracket
+each class boundary. figS4's build parses the same table for its trajectory panels — a deliberate
+duplication, so neither package reaches into the other's `data/`. 3A writes its legend as a **separate**
+pair of files (`3A_rankedTransposonBiomass_legend.{png,svg}`).
+
+
 | Panel | `render/` script | `data/` table(s) | `build/` script |
 |---|---|---|---|
-| **3A** peak-biomass overlay | `3A_reimagingUmap_coloredByBiomass.py` | `coloredByBiomassNormWT_plasma_nn10_md0.10_coords.csv` | `3A_reimagingUmap_coloredByBiomass.py` |
+| **3A** ranked transposon peak biomass | `3A_rankedTransposonBiomass.py` | `tn_phenotype_summary.csv`, `tn_thresholds.csv` | `3A_rankedTransposonBiomass.py` |
 | **3B** functional landscape | `3B_reimagingUmap_functionalAnnotations.py` | `reimagingLandscape_nn10_md0.10_coords.csv` | `3B_reimagingUmap_functionalAnnotations.py` |
-| **3B** top inset (by function) | `3Ctop_reimagingUmap_centroidsByFunction.py` | `centroidsByFunction_nn10_md0.10_centroids.csv` (+ landscape coords) | `3Ctop_reimagingUmap_centroidsByFunction.py` |
-| **3B** bottom inset (by locus) | `3Cbottom_reimagingUmap_centroidsByLocus.py` | `centroidsByLocus_nn10_md0.10_centroids.csv` (+ landscape coords) | `3Cbottom_reimagingUmap_centroidsByLocus.py` |
-| **3D** dendrogram + heatmap | `3C_dendrogramHeatmap.py` | `functional_peakBiomass_featureMatrix.csv`, `functional_pcaLinkage_cluster_order.csv`, `functional_pcaLinkage_linkage.npy` | `3C_generateDendogramHeatmaps-withPCA.py` |
+| **3B** top inset (by function) | `3Btop_reimagingUmap_centroidsByFunction.py` | `centroidsByFunction_nn10_md0.10_centroids.csv` (+ landscape coords) | `3Btop_reimagingUmap_centroidsByFunction.py` |
+| **3B** bottom inset (by locus) | `3Bbottom_reimagingUmap_centroidsByLocus.py` | `centroidsByLocus_nn10_md0.10_centroids.csv` (+ landscape coords) | `3Bbottom_reimagingUmap_centroidsByLocus.py` |
+| **3C** representative images | — | — | not in this repo (image panels) |
+| **3D** dendrogram + heatmap | `3D_dendrogramHeatmap.py` | `functional_peakBiomass_featureMatrix.csv`, `functional_pcaLinkage_cluster_order.csv`, `functional_pcaLinkage_linkage.npy` | `3D_generateDendogramHeatmaps-withPCA.py` |
 | **Supp.** per-gene PDF | `reimagingUmap_perGenePdf.py` | `reimagingUmap_nn10_md0.10_perGene_coords.csv` | `reimagingUmap_perGenePdf.py` |
 
 **The manifold fit** (step 4, applied identically for every panel): feature filter frames 9–27 (biomass

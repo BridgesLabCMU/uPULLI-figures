@@ -1,0 +1,159 @@
+mutant,display,gene,peakFrame,annotation,color
+wbeL,wbeL,VC_0249,27,O-Antigen Biosynthesis,#0096ff
+manA,manA,VC_0269,24,O-Antigen Biosynthesis,#0096ff
+manC,manC,VC_0241,23,O-Antigen Biosynthesis,#0096ff
+flgO,flgO,VC_2207,23,Motility,#ff0004
+potB,potB,VC_1427,23,Polyamine Import,#14f7f0
+potA,potA,VC_1428,24,Polyamine Import,#14f7f0
+potD1,potD1,VC_1424,24,Polyamine Import,#14f7f0
+flgP,flgP,VC_2206,16,Motility,#ff0004
+VC_A0800,VC_A0800,VC_A0800,24,Other,#bdbdbd
+pckA,pckA,VC_2738,23,Other,#bdbdbd
+VC_2485,VC_2485,VC_2485,23,Other,#bdbdbd
+VC_A0171,VC_A0171,VC_A0171,22,Other,#bdbdbd
+VC_A0785,VC_A0785,VC_A0785,24,Other,#bdbdbd
+manB,manB,VC_0242,22,O-Antigen Biosynthesis,#0096ff
+wbeG,wbeG,VC_0245,28,O-Antigen Biosynthesis,#0096ff
+VC_0900,VC_0900,VC_0900,23,Other,#bdbdbd
+mrcA,mrcA,VC_2635,30,Other,#bdbdbd
+flgT,flgT,VC_2208,15,Motility,#ff0004
+fliE,fliE,VC_2134,13,Motility,#ff0004
+flhA,flhA,VC_2069,17,Motility,#ff0004
+lpxM,lpxM,VC_0212,15,O-Antigen Biosynthesis,#0096ff
+flgB,flgB,VC_2200,15,Motility,#ff0004
+flrB,flrB,VC_2136,16,Motility,#ff0004
+flgF,flgF,VC_2196,16,Motility,#ff0004
+fliL,fliL,VC_2130,17,Motility,#ff0004
+fliA,fliA,VC_2066,15,Motility,#ff0004
+VC_A0079,VC_A0079,VC_A0079,14,Other,#bdbdbd
+flrA,flrA,VC_2137,14,Motility,#ff0004
+flhB,flhB,VC_2120,16,Motility,#ff0004
+fliR,fliR,VC_2121,17,Motility,#ff0004
+fliP,fliP,VC_2123,15,Motility,#ff0004
+fliS,fliS,VC_2138,15,Motility,#ff0004
+flaA,flaA,VC_2188,16,Motility,#ff0004
+fliQ,fliQ,VC_2122,15,Motility,#ff0004
+VC_2718; VC_2719,VC_2718; VC_2719,VC_2718; VC_2719,17,Other,#bdbdbd
+bioA,bioA,VC_1111,15,Biotin Biosynthesis,#ff9f1c
+bioF,bioF,VC_1113,16,Biotin Biosynthesis,#ff9f1c
+bioC,bioC,VC_1114,16,Biotin Biosynthesis,#ff9f1c
+bioD,bioD,VC_1115,14,Biotin Biosynthesis,#ff9f1c
+wbeT,wbeT,VC_0259,24,O-Antigen Biosynthesis,#0096ff
+VC_1359,VC_1359,VC_1359,22,Other,#bdbdbd
+VC_1887,VC_1887,VC_1887,15,Other,#bdbdbd
+fadR,fadR,VC_1900,30,Other,#bdbdbd
+wavL,wavL,VC_0239,30,O-Antigen Biosynthesis,#0096ff
+flgD,flgD,VC_2198,12,Motility,#ff0004
+flgE,flgE,VC_2197,11,Motility,#ff0004
+VC_2627,VC_2627,VC_2627,12,Other,#bdbdbd
+glmS,glmS,VC_0487,12,Other,#bdbdbd
+VC_1423,VC_1423,VC_1423,12,Other,#bdbdbd
+VC_1909,VC_1909,VC_1909,13,Other,#bdbdbd
+VC_A0726,VC_A0726,VC_A0726,13,Other,#bdbdbd
+hslO,hslO,VC_2736,13,Other,#bdbdbd
+VC_A0340,VC_A0340,VC_A0340,12,Other,#bdbdbd
+VC_2522,VC_2522,VC_2522,13,Other,#bdbdbd
+pilC,pilC,VC_2425,12,Other,#bdbdbd
+VC_1350,VC_1350,VC_1350,12,Other,#bdbdbd
+fliD,fliD,VC_2140,12,Motility,#ff0004
+VC_0462,VC_0462,VC_0462,12,Other,#bdbdbd
+glyQ,glyQ,VC_0021,12,Other,#bdbdbd
+VC_A0328,VC_A0328,VC_A0328,12,Other,#bdbdbd
+VC_1581,VC_1581,VC_1581,12,Other,#bdbdbd
+VC_A0536,VC_A0536,VC_A0536,11,Other,#bdbdbd
+VC_2523,VC_2523,VC_2523,13,Other,#bdbdbd
+VC_A0005,VC_A0005,VC_A0005,12,Other,#bdbdbd
+VC_2524,VC_2524,VC_2524,12,Other,#bdbdbd
+nusB,nusB,VC_2267,12,Other,#bdbdbd
+flgM,flgM,VC_2204,12,Motility,#ff0004
+VC_0405,VC_0405,VC_0405,12,Other,#bdbdbd
+VC_A0001,VC_A0001,VC_A0001,12,Other,#bdbdbd
+VC_0449,VC_0449,VC_0449,12,Other,#bdbdbd
+mutH,mutH,VC_0668,13,Other,#bdbdbd
+thiI,thiI,VC_0894,12,Other,#bdbdbd
+rjg,rjg,VC_0264,12,Other,#bdbdbd
+VC_A0588,VC_A0588,VC_A0588,12,Other,#bdbdbd
+aroE,aroE,VC_0056,12,Other,#bdbdbd
+grx,grx,VC_1146,11,Other,#bdbdbd
+pta,pta,VC_1097,11,Other,#bdbdbd
+VC_1320,VC_1320,VC_1320,11,Other,#bdbdbd
+VC_A0620,VC_A0620,VC_A0620,11,Other,#bdbdbd
+VC_1319,VC_1319,VC_1319,12,Other,#bdbdbd
+VC_A0527,VC_A0527,VC_A0527,11,Other,#bdbdbd
+VC_A1099,VC_A1099,VC_A1099,11,Other,#bdbdbd
+trmJ,trmJ,VC_0746,11,Other,#bdbdbd
+proQ,proQ,VC_1497,11,Other,#bdbdbd
+pstB1,pstB1,VC_0726,12,Other,#bdbdbd
+VC_1652,VC_1652,VC_1652,11,Other,#bdbdbd
+VC_1710,VC_1710,VC_1710,12,Other,#bdbdbd
+VC_0134,VC_0134,VC_0134,11,Other,#bdbdbd
+VC_2714,VC_2714,VC_2714,11,Other,#bdbdbd
+groS2,groS2,VC_A0819,11,Other,#bdbdbd
+VC_1414,VC_1414,VC_1414,12,Other,#bdbdbd
+VC_2224,VC_2224,VC_2224,12,Other,#bdbdbd
+epsC,epsC,VC_2734,12,Other,#bdbdbd
+VC_1154,VC_1154,VC_1154,12,Other,#bdbdbd
+WT,WT,WT,11,WT,#000000
+VC_0289,VC_0289,VC_0289,12,Other,#bdbdbd
+rimO,rimO,VC_2620,11,Other,#bdbdbd
+VC_1295,VC_1295,VC_1295,12,Other,#bdbdbd
+argH,argH,VC_2641,11,Other,#bdbdbd
+ung,ung,VC_2359,13,Other,#bdbdbd
+VC_0399,VC_0399,VC_0399,16,Other,#bdbdbd
+lexA,lexA,VC_0092,15,Other,#bdbdbd
+VC_0745,VC_0745,VC_0745,17,Other,#bdbdbd
+VC_2441,VC_2441,VC_2441,15,Other,#bdbdbd
+VC_A0940,VC_A0940,VC_A0940,14,Other,#bdbdbd
+wbeN,wbeN,VC_0251,30,O-Antigen Biosynthesis,#0096ff
+VC_0161,VC_0161,VC_0161,15,Other,#bdbdbd
+VC_A1081,VC_A1081,VC_A1081,15,Other,#bdbdbd
+VC_2271,VC_2271,VC_2271,25,Other,#bdbdbd
+VC_0113,VC_0113,VC_0113,20,Other,#bdbdbd
+rluE,rluE,VC_1140,19,Other,#bdbdbd
+VC_2756,VC_2756,VC_2756,22,Other,#bdbdbd
+recO,recO,VC_2459,26,Other,#bdbdbd
+VC_0196,VC_0196,VC_0196,14,Other,#bdbdbd
+VC_1462,VC_1462,VC_1462,13,Other,#bdbdbd
+pabC,pabC,VC_2018,16,Other,#bdbdbd
+wavA,wavA,VC_0223,30,O-Antigen Biosynthesis,#0096ff
+wbeM,wbeM,VC_0250,30,O-Antigen Biosynthesis,#0096ff
+VC_A0187,VC_A0187,VC_A0187,17,Other,#bdbdbd
+trpR,trpR,VC_0701,15,Other,#bdbdbd
+cheW,cheW,VC_2059,13,Motility,#ff0004
+flgA,flgA,VC_2203,12,Motility,#ff0004
+VC_0419,VC_0419,VC_0419,12,Other,#bdbdbd
+VC_A0840,VC_A0840,VC_A0840,13,Other,#bdbdbd
+flgK,flgK,VC_2191,13,Motility,#ff0004
+fliJ,fliJ,VC_2129,13,Motility,#ff0004
+VC_0929,VC_0929,VC_0929,17,Other,#bdbdbd
+VC_A0146,VC_A0146,VC_A0146,13,Other,#bdbdbd
+dnaN,dnaN,VC_0013,12,Other,#bdbdbd
+wzt,wzt,VC_0247,12,O-Antigen Biosynthesis,#0096ff
+ectA,ectA,VC_A0825,12,Other,#bdbdbd
+potC,potC,VC_1426,13,Polyamine Import,#14f7f0
+VC_1291,VC_1291,VC_1291,13,Other,#bdbdbd
+VC_1498,VC_1498,VC_1498,13,Other,#bdbdbd
+VC_A0759,VC_A0759,VC_A0759,13,Other,#bdbdbd
+VC_2311,VC_2311,VC_2311,13,Other,#bdbdbd
+VC_2453,VC_2453,VC_2453,13,Other,#bdbdbd
+VC_1933,VC_1933,VC_1933,13,Other,#bdbdbd
+rsmJ,rsmJ,VC_0073,14,Other,#bdbdbd
+VC_A0999,VC_A0999,VC_A0999,13,Other,#bdbdbd
+argF,argF,VC_2508,13,Other,#bdbdbd
+greA,greA,VC_0634,13,Other,#bdbdbd
+rluD,rluD,VC_0709,14,Other,#bdbdbd
+argR,argR,VC_0431,13,Other,#bdbdbd
+cdgJ,cdgJ,VC_0137,15,Other,#bdbdbd
+VC_1885,VC_1885,VC_1885,24,Other,#bdbdbd
+flhG,flhG,VC_2067,23,Motility,#ff0004
+VC_1003,VC_1003,VC_1003,28,Other,#bdbdbd
+lipA,lipA,VC_0943,30,Pyruvate Flux,#39ff14
+pdhE2,pdhE2,VC_2413,29,Pyruvate Flux,#39ff14
+glyA1,glyA1,VC_0941,21,Other,#bdbdbd
+gshB,gshB,VC_0468,19,Other,#bdbdbd
+nfuA,nfuA,VC_2720,18,Other,#bdbdbd
+VC_2270,VC_2270,VC_2270,20,Other,#bdbdbd
+vibB,vibB,VC_0771,23,Vibriobactin Biosynthesis,#a200ff
+mltF,mltF,VC_0866,15,Other,#bdbdbd
+aroQ,aroQ,VC_0297,15,Other,#bdbdbd
+guaB,guaB,VC_0767,12,Other,#bdbdbd

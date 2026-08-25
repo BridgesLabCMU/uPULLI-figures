@@ -2,9 +2,10 @@
 
 Same CV protocol as the numerical confusion matrix (GroupKFold by plateId, 5 folds x 5 repeats,
 RandomForest 200 trees balanced, per-fold StandardScaler), but the feature matrix is the stacked CLS
-embedding (frames 9-27 -> 14592 dims). Emits the mean row-normalized confusion matrix.
+embedding over the cholerae growth-phase window frames 9-30 (22 x 768 = 16896 dims). Emits the mean
+row-normalized confusion matrix.
 
-Reads:  config.CLS, config.EMBIDX, config.WIDE (labels + growth filter)
+Reads:  config.input('training/embeddings/cls.npy'), config.input('training/embeddings/index.csv'), config.input('training/wide.parquet') (labels + growth filter)
 Writes: data/embeddings_confusion_cv.csv
 """
 import sys
@@ -21,11 +22,11 @@ from sklearn.metrics import confusion_matrix, balanced_accuracy_score
 from figlib import config, features, STRAIN_ORDER
 
 randomState, nRepeats, nSplits = 0, 5, 5
-FRAMES = features.KEEP_FRAMES
+FRAMES = list(range(9, 31))   # cholerae growth-phase window 9-30 (training classification; reimaging figs kept at 9-27)
 
-cls = np.load(config.CLS)
-idx = pd.read_csv(config.EMBIDX)
-wide = pd.read_parquet(config.WIDE)
+cls = np.load(config.input('training/embeddings/cls.npy'))
+idx = pd.read_csv(config.input('training/embeddings/index.csv'))
+wide = pd.read_parquet(config.input('training/wide.parquet'))
 bcols = [c for c in wide.columns if re.match(r'^biomass_t\d+$', c)]
 maxBio = wide[bcols].max(axis=1)
 wtMed = pd.DataFrame({'p': wide.plateId, 'b': maxBio, 'm': wide.mutant}).query("m=='WT'").groupby('p')['b'].median()

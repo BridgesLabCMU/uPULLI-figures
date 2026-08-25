@@ -4,9 +4,24 @@ __pycache__/
 
 # rendered outputs — regenerate deterministically from data/ via render/
 fig*/figures/
+archive/movies/videos/
 
-# build-layer heavy inputs (fetch from KiltHub; not tracked)
+# The interactive supplements are the EXCEPTION: they are tracked, because unlike the static panels
+# they cannot be rebuilt without the deposited thumbnail packs, and a reader who clones the repo
+# should get them. ~83 MB for the three atlas explorers; the volcano explorers are <1 MB each.
+!interactive/figures/
+!interactive/figures/*.html
+
+# build-layer heavy inputs (fetch from the data deposit; not tracked)
 fig*/build/inputs/
+interactive/build/inputs/
+archive/movies/build/inputs/
 
-# manuscript drafts (not part of the figure repo)
+# manuscript + internal drafting material — never part of the public package
 *.pdf
+SUPPLEMENTAL_LEGENDS.md
+
+# local machine -> logical input map (absolute paths; never published)
+inputs.local.json
+
+deposit/

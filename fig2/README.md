@@ -14,7 +14,7 @@ render/              draw each panel from data/  → figures/   (what you run)
 build/               regenerate data/ from the original feature set (KiltHub; optional)
 figures/             rendered PNG/SVG output
 ```
-(Shared `requirements.txt` / `environment.yml` / `LICENSE` live at the repository root.)
+(Shared `requirements.txt` / `environment.yml` / `LICENSE` live at the `paper-figures/` root.)
 
 ## From raw data to panels (full chain)
 
@@ -36,10 +36,20 @@ Steps 1–2 are the µPULLI pipeline (separate repo); steps 3–5 are here. `ren
 | Panel | `render/` script | `data/` table(s) | `build/` script |
 |---|---|---|---|
 | **2B** biomass traces | `2B_biomassTraces.py` | `biomassTraces_normWTpeak.csv` | `2B_biomassTraces.py` |
-| **2C** peak-biomass feature heatmap | `2C_trainingHeatmap.py` | `trainingHeatmap_peakBiomass_featureMatrix.csv` (+ `_peakFrames.csv`) | `2C_trainingHeatmap.py` |
+| **2C** peak-biomass feature heatmap, features clustered | `2C_trainingHeatmap.py` | `trainingHeatmap_peakBiomass_featureMatrix.csv` (+ `_peakFrames.csv`) | `2C_trainingHeatmap.py` |
+| 2C variant, features in family order (no dendrogram) | `2C_trainingHeatmap_familyOrder.py` | same table | — |
 | **2D** multimodal UMAP | `2D_trainingUmap.py` | `trainingUmap_all_three_coords.csv` | `2D_trainingUmap.py` |
 | **2E** RF confusion matrix | `2E_confusion.py` | `all_confusion_cv.csv` | `2E_confusion.py` |
 | **2F** single-feature heatmaps (×4) | `2F_featmaps.py` | `featmap_<feat>.csv` ×4 + `featmaps_meta.csv` | `2F_featmaps.py` |
+
+**2C clustering.** Rows (features) are ordered by hierarchical clustering — Ward linkage on Euclidean
+distances between each feature's z-score profile across the eight mutants; the bundled matrix is already
+standardized, so no further scaling is applied. Columns keep the fixed strain order and are *not*
+clustered. Because clustering breaks up the feature families, family membership moves from contiguous
+brackets to the color strip on the right (same three classes/colors as Fig. S2D). vpsL's 12 colony
+features are undefined (it forms no microcolonies): they are drawn grey and treated as the row mean
+(0 in z-space) for the linkage only. The pre-clustering family-ordered layout is still renderable via
+`2C_trainingHeatmap_familyOrder.py`.
 
 Growth filter: 2D and 2E keep a well if `mutant==vpsL` OR its max biomass ≥ 0.15× the per-plate WT
 median max (1149 wells). 2B/2C/2F use all replicates of the 8 mutants. UMAP (2D, nn=25/md=0.25/rs=0) and

@@ -5,7 +5,7 @@ Growth-filters the training wide table, standardizes the three feature modalitie
 (biomass log1p, whole-image haralick/entropy, the 12 colony bases), concatenates all three, and fits
 UMAP (n_neighbors=25, min_dist=0.25, random_state=0). Emits per-well coordinates + mutant label.
 
-Reads:  config.WIDE (training_wide.parquet)
+Reads:  config.input('training/wide.parquet') (training_wide.parquet)
 Writes: data/trainingUmap_all_three_coords.csv
 """
 import sys
@@ -19,8 +19,8 @@ from sklearn.preprocessing import StandardScaler
 import umap.umap_ as umap
 from figlib import config, features, STRAIN_ORDER
 
-FRAMES, NN, MD, RS = features.KEEP_FRAMES, 25, 0.25, 0
-df = pd.read_parquet(config.WIDE)
+FRAMES, NN, MD, RS = list(range(9, 28)), 25, 0.25, 0   # pinned 9-27 (preserved variant; the 9-30 window lives in 2D_trainingUmap_frames9-30.py)
+df = pd.read_parquet(config.input('training/wide.parquet'))
 
 bcols = [c for c in df.columns if re.match(r'^biomass_t\d+$', c)]
 maxBio = df[bcols].max(axis=1)

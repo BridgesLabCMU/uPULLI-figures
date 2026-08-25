@@ -1,0 +1,51 @@
+mutant,display,gene,peakFrame,annotation,color
+wbeL,wbeL,VC_0249,27,O-Antigen Biosynthesis,#0096ff
+manA,manA,VC_0269,24,O-Antigen Biosynthesis,#0096ff
+manC,manC,VC_0241,23,O-Antigen Biosynthesis,#0096ff
+flhB,flhB,VC_2120,16,Motility,#ff0004
+fliR,fliR,VC_2121,17,Motility,#ff0004
+flrB,flrB,VC_2136,16,Motility,#ff0004
+flgF,flgF,VC_2196,16,Motility,#ff0004
+fliL,fliL,VC_2130,17,Motility,#ff0004
+flgP,flgP,VC_2206,16,Motility,#ff0004
+flgO,flgO,VC_2207,23,Motility,#ff0004
+potB,potB,VC_1427,23,Polyamine Import,#14f7f0
+potA,potA,VC_1428,24,Polyamine Import,#14f7f0
+potD1,potD1,VC_1424,24,Polyamine Import,#14f7f0
+flgT,flgT,VC_2208,15,Motility,#ff0004
+fliE,fliE,VC_2134,13,Motility,#ff0004
+flhA,flhA,VC_2069,17,Motility,#ff0004
+lpxM,lpxM,VC_0212,15,O-Antigen Biosynthesis,#0096ff
+fliP,fliP,VC_2123,15,Motility,#ff0004
+fliS,fliS,VC_2138,15,Motility,#ff0004
+flaA,flaA,VC_2188,16,Motility,#ff0004
+fliQ,fliQ,VC_2122,15,Motility,#ff0004
+fliA,fliA,VC_2066,15,Motility,#ff0004
+flgB,flgB,VC_2200,15,Motility,#ff0004
+flrA,flrA,VC_2137,14,Motility,#ff0004
+wavL,wavL,VC_0239,30,O-Antigen Biosynthesis,#0096ff
+wbeT,wbeT,VC_0259,24,O-Antigen Biosynthesis,#0096ff
+bioA,bioA,VC_1111,15,Biotin Biosynthesis,#ff9f1c
+bioF,bioF,VC_1113,16,Biotin Biosynthesis,#ff9f1c
+bioC,bioC,VC_1114,16,Biotin Biosynthesis,#ff9f1c
+bioD,bioD,VC_1115,14,Biotin Biosynthesis,#ff9f1c
+vibB,vibB,VC_0771,23,Vibriobactin Biosynthesis,#a200ff
+lipA,lipA,VC_0943,30,Pyruvate Flux,#39ff14
+pdhE2,pdhE2,VC_2413,29,Pyruvate Flux,#39ff14
+flhG,flhG,VC_2067,23,Motility,#ff0004
+manB,manB,VC_0242,22,O-Antigen Biosynthesis,#0096ff
+wbeG,wbeG,VC_0245,28,O-Antigen Biosynthesis,#0096ff
+wzt,wzt,VC_0247,12,O-Antigen Biosynthesis,#0096ff
+wbeM,wbeM,VC_0250,30,O-Antigen Biosynthesis,#0096ff
+wavA,wavA,VC_0223,30,O-Antigen Biosynthesis,#0096ff
+wbeN,wbeN,VC_0251,30,O-Antigen Biosynthesis,#0096ff
+flgM,flgM,VC_2204,12,Motility,#ff0004
+WT,WT,WT,11,WT,#000000
+flgD,flgD,VC_2198,12,Motility,#ff0004
+flgE,flgE,VC_2197,11,Motility,#ff0004
+fliJ,fliJ,VC_2129,13,Motility,#ff0004
+cheW,cheW,VC_2059,13,Motility,#ff0004
+flgA,flgA,VC_2203,12,Motility,#ff0004
+fliD,fliD,VC_2140,12,Motility,#ff0004
+flgK,flgK,VC_2191,13,Motility,#ff0004
+potC,potC,VC_1426,13,Polyamine Import,#14f7f0

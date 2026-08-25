@@ -22,7 +22,7 @@ import pandas as pd
 from figlib import config, plotting
 
 ap = argparse.ArgumentParser()
-ap.add_argument('--embeddings', default=str(config.EMB),
+ap.add_argument('--embeddings', default=str(config.input('reimaging/umapEmbeddings.parquet')),
                 help='UMAP embeddings parquet (standard schema). Defaults to the v2 numerical manifold.')
 ap.add_argument('--outdir', default=str(config.FIGURES))
 ap.add_argument('--nn', type=int, default=10)

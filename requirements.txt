@@ -4,8 +4,12 @@
 # Rebuilding those tables from the raw feature matrix (build/, requires the KiltHub wide table)
 # additionally needs the "rebuild" set.
 #
-# The figures assume the 'Gillius ADF' font; if it is missing, matplotlib falls back silently and text
-# spacing will differ from the published figures (the data/coordinates are unaffected).
+# The figures assume the 'Gillius ADF' font. figlib prints a one-time warning if it is missing, since
+# matplotlib otherwise falls back silently and text spacing drifts from the published figures (the data
+# and coordinates are unaffected). It is not bundled here: it is GPL-2+ with font exception, and this
+# repository is MIT, so it is installed rather than redistributed.
+#   Debian/Ubuntu:  apt install fonts-adf-gillius
+#   macOS/Windows/other:  https://arkandis.tuxfamily.org/adffonts.html  (Gillius ADF, install the .otf)
 
 # --- core: render the panels from data/ ---
 numpy==2.0.2

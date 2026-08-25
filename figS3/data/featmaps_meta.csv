@@ -1,0 +1,28 @@
+feature,label,unit,family,rfAccuracy
+biomass,Biofilm Biomass,a.u.,biomass,0.9392355510752688
+whole_entropy,Global Image Entropy,a.u.,whole,0.9629687499999998
+whole_haralick_0,Global Texture Energy,a.u.,whole,0.8845900537634409
+whole_haralick_1,Global Texture Contrast,a.u.,whole,0.7007493279569893
+whole_haralick_2,Global Texture Correlation,a.u.,whole,0.9203225806451614
+whole_haralick_3,Global Texture Variance,a.u.,whole,0.9582190860215054
+whole_haralick_4,Global Texture Homogeneity,a.u.,whole,0.6643783602150539
+whole_haralick_5,Global Texture Sum Average,a.u.,whole,0.4669354838709676
+whole_haralick_6,Global Texture Sum Variance,a.u.,whole,0.959702620967742
+whole_haralick_7,Global Texture Sum Entropy,a.u.,whole,0.9731334005376344
+whole_haralick_8,Global Texture Entropy,a.u.,whole,0.9252150537634408
+whole_haralick_9,Global Texture Difference Variance,a.u.,whole,0.6812567204301077
+whole_haralick_10,Global Texture Difference Entropy,a.u.,whole,0.6941733870967742
+whole_haralick_11,Global Texture IMC1,a.u.,whole,0.9028242607526882
+whole_haralick_12,Global Texture IMC2,a.u.,whole,0.9401159274193548
+nColonies,Number of Colonies,count,colony,0.917301747311828
+colony_area_um2_mean,Average Colony Area,$\mu$m$^2$,colony,0.8260265456989246
+colony_area_um2_std,Colony Area Variability,$\mu$m$^2$,colony,0.8153393817204302
+colony_bgCV,Background Intensity Variability (CV),,colony,0.927797379032258
+colony_centroidOffset_um_mean,Average Colony Radial Offset,$\mu$m,colony,0.8807140456989248
+colony_majorAxisLength_um_mean,Average Colony Major Axis Length,$\mu$m,colony,0.7902738575268817
+colony_meanIntensity_mean,Average Colony Intensity,a.u.,colony,0.9084290994623656
+colony_meanIntensity_kurtosis,Colony Intensity Tailedness,,colony,0.650198252688172
+colony_mstEdgeMax_um_mean,Largest Inter-Colony Distance,$\mu$m,colony,0.8990020161290322
+colony_nnDistance1_um_mean,Mean Nearest-Neighbor Distance,$\mu$m,colony,0.8013676075268817
+colony_nnDistance1_um_std,Nearest-Neighbor Distance Variability,$\mu$m,colony,0.8926192876344088
+colony_eccentricity_mean,Average Colony Eccentricity,,colony,0.7327469758064517

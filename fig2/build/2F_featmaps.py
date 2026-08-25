@@ -3,9 +3,9 @@
 For each of the four featured single features, builds a mutant (row) x frame (col) matrix of the median
 value across replicates (colony features: timepoints with < minRepsPerTp replicates above the biomass
 threshold are masked NaN). Also writes a meta table with the display label, unit, group, and the
-single-feature RF balanced accuracy (from config.ACC) used in each panel's title.
+single-feature RF balanced accuracy (from ACC_PATH) used in each panel's title.
 
-Reads:  config.WIDE (training_wide.parquet); config.ACC (singleFeatureAccuracy.csv, optional)
+Reads:  config.input('training/wide.parquet') (training_wide.parquet); ACC_PATH (singleFeatureAccuracy.csv, optional)
 Writes: data/featmap_<feat>.csv (x4)  +  data/featmaps_meta.csv
 """
 import sys
@@ -16,10 +16,12 @@ import numpy as np
 import pandas as pd
 from figlib import config, features, STRAIN_ORDER
 
+ACC_PATH = ACC_PATH   # bundled Fig S2D output, not a deposit input
+
 FEATURES = ['colony_meanIntensity_mean', 'nColonies', 'colony_eccentricity_mean', 'whole_haralick_8']
 timeStart, biomassThresh, minRepsPerTp = 8, 5e-3, 10
 
-df = pd.read_parquet(config.WIDE)
+df = pd.read_parquet(config.input('training/wide.parquet'))
 df = df[df['mutant'].isin(STRAIN_ORDER)].reset_index(drop=True)
 
 
@@ -41,11 +43,11 @@ for m in STRAIN_ORDER:
     excludedTp[m] = excl
 
 acc = {}
-if config.ACC.exists():
-    a = pd.read_csv(config.ACC)
+if ACC_PATH.exists():
+    a = pd.read_csv(ACC_PATH)
     acc = dict(zip(a['featureBase'], a['balancedAccuracy']))
 else:
-    print(f'[WARN] {config.ACC} not found — RF accuracy omitted from meta')
+    print(f'[WARN] {ACC_PATH} not found — RF accuracy omitted from meta')
 
 config.ensure(config.TABLES)
 metaRows = []

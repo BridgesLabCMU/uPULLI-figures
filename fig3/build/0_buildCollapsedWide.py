@@ -13,11 +13,11 @@ Upstream of this (NOT in this repo): raw images -> µPULLI image pipeline -> pro
 (BioImage Archive); processed images -> µPULLI feature extraction (multiWellAnalysis + DINOv2) ->
 master_frame_features.csv. See the top-level README / the pipeline repository.
 
-Inputs (KiltHub; override via env FIG3_MASTER_FRAME / FIG3_REIMAGING_INDEX):
-  config.MASTER_FRAME  master_frame_features.csv
-  config.INDEX         reimagingIndex.csv
+Inputs (see inputs.json):
+  reimaging/master_frame_features.csv  per-(plate, well, frame) features
+  reimaging/geneIndex.csv              well -> geneLocus / geneName / function
 Output:
-  config.WIDE          reimaging_collapsedWide.parquet   (consumed by build/3*.py)
+  reimaging/collapsedWide.parquet      consumed by build/3*.py
 """
 import sys
 import re
@@ -27,9 +27,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # -> fig3/ for fig
 import pandas as pd
 from figlib import config
 
-masterFramePath = config.MASTER_FRAME
-indexPath = config.INDEX
-parquetOut = Path(config.ensure(config.WIDE))
+masterFramePath = config.input('reimaging/master_frame_features.csv')
+indexPath = config.input('reimaging/geneIndex.csv')
+parquetOut = Path(config.ensure(config.input_path('reimaging/collapsedWide.parquet')))
 framesExpected = list(range(31))
 
 

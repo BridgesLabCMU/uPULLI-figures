@@ -8,12 +8,12 @@ a KiltHub deposit) into the wide table the other build scripts consume, and reco
 Upstream of this (NOT in this repo): raw images -> µPULLI image pipeline -> processed images/masks
 (BioImage Archive); processed images -> µPULLI feature extraction -> master_frame_features.csv.
 
-Inputs (override via env FIG2_MASTER_FRAME / FIG2_OLD_CLEANED):
-  config.MASTER_FRAME  training master_frame_features.csv
-  config.OLD_CLEANED   legacy cleaned parquet (label source)
+Inputs (see inputs.json):
+  training/master_frame_features.csv   per-(plate, well, frame) features
+  training/layout.csv                  plateId, wellId -> mutant
 Output:
-  config.WIDE          training_wide.parquet   (consumed by build/2*.py)
-  data/trainingLayout.csv   (plateId, wellId -> mutant)
+  training/wide.parquet                consumed by build/2*.py
+  data/trainingLayout.csv              bundled copy of the layout, for the record
 """
 import sys
 import re
@@ -23,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # -> fig2/ for fig
 import pandas as pd
 from figlib import config
 
-parquetOut = Path(config.ensure(config.WIDE))
+parquetOut = Path(config.ensure(config.input_path('training/wide.parquet')))
 layoutOut = config.TABLES / 'trainingLayout.csv'
 config.ensure(config.TABLES)
 
@@ -43,8 +43,9 @@ def stripMag(w):
     return m.group(1) if m else str(w)
 
 
-print(f'Loading {config.MASTER_FRAME}')
-frame = pd.read_csv(config.MASTER_FRAME)
+masterFrame = config.input('training/master_frame_features.csv')
+print(f'Loading {masterFrame}')
+frame = pd.read_csv(masterFrame)
 frame['plateId'] = frame['plateID'].astype(str).str.replace(' ', '_', regex=False)  # 'Plate 1' -> 'Plate_1'
 frame['wellId'] = frame['wellID'].apply(stripMag)
 frame = frame[frame['frame'].between(0, 30)].copy()
@@ -57,7 +58,7 @@ long['feature'] = long['feature'] + '_t' + long['frame'].astype(int).astype(str)
 wide = long.pivot_table(index=['plateId', 'wellId'], columns='feature', values='value', aggfunc='first').reset_index()
 wide.columns.name = None
 
-lab = pd.read_parquet(config.OLD_CLEANED, columns=['plateId', 'wellId', 'mutant']).drop_duplicates(['plateId', 'wellId'])
+lab = pd.read_csv(config.input('training/layout.csv'))[['plateId', 'wellId', 'mutant']].drop_duplicates(['plateId', 'wellId'])
 lab.to_csv(layoutOut, index=False)
 merged = wide.merge(lab, on=['plateId', 'wellId'], how='left')
 front = ['plateId', 'wellId', 'mutant']

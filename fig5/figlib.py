@@ -3,33 +3,30 @@
 Figure 5 spans three datasets: compounds (A), K. pneumoniae kleb (B), multispecies (C).
 Panel scripts: `from figlib import config, features, plotting` plus the dataset constants they need.
 """
-import os
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # -> repo root for figlib_shared
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # -> paper-figures/ for figlib_shared
 import figlib_shared as _S
 
 features = _S.features
 plotting = _S.plotting
 
-HERE = Path(__file__).resolve().parent      # <repo>/fig5/
-INPUTS = HERE / 'build' / 'inputs'          # place the KiltHub feature tables / CLS caches here (or set env vars)
+HERE = Path(__file__).resolve().parent      # paper-figures/fig5/
 
 config = _S.make_config(
     HERE,
-    # A (compounds): build inputs for the biotin barcode regenerator
-    CMPD_WIDE=Path(os.environ.get('FIG5_CMPD_WIDE', INPUTS / 'cmpd_260522_collapsedWide.parquet')),
-    CLEANDEL_WIDES=[INPUTS / 'cleanDel_260521_collapsedWide.parquet',
-                    INPUTS / 'cleanDel_260522_collapsedWide.parquet'],
-    REIM_WIDE=Path(os.environ.get('FIG5_REIM_WIDE', INPUTS / 'reimaging_collapsedWide.parquet')),
-    # B (kleb): CLS embeddings + master frame (growth filter)
-    KLEB_CLS=Path(os.environ.get('FIG5_KLEB_CLS', INPUTS / 'kleb_cls.npy')),
-    KLEB_EMBIDX=Path(os.environ.get('FIG5_KLEB_EMBIDX', INPUTS / 'kleb_embIndex.csv')),
-    KLEB_FRAME=Path(os.environ.get('FIG5_KLEB_FRAME', INPUTS / 'kleb_master_frame_features.csv')),
-    # C (multispecies): CLS embeddings (10X) + index
-    MULTI_CLS=Path(os.environ.get('FIG5_MULTI_CLS', INPUTS / 'multispecies_10X_cls.npy')),
-    MULTI_EMBIDX=Path(os.environ.get('FIG5_MULTI_EMBIDX', INPUTS / 'multispecies_10X_embIndex.csv')),
+    inputs=[
+        'cluster/cmpd_260522_collapsedWide.parquet',
+        'cluster/cleanDel_260521_collapsedWide.parquet',
+        'cluster/cleanDel_260522_collapsedWide.parquet',
+        'reimaging/collapsedWide.parquet',
+        'kleb/master_frame_features.csv',
+        'kleb/embeddings/cls.npy',
+        'kleb/embeddings/index.csv',
+        'multispecies/embeddings/cls_10X.npy',
+        'multispecies/embeddings/index_10X.csv',
+    ],
 )
 
 # ── B: K. pneumoniae kleb strains (waaL dropped) ──

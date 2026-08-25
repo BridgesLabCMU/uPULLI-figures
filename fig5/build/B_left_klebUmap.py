@@ -5,7 +5,7 @@ then fits UMAP (nn=10, md=0.1, random_state=0) under cosine (L2-norm) and euclid
 representations; the panel uses euclid. Kleb has one mutant per plate, so labels come from
 plate-timestamp -> NV id -> gene; growth filter = max biomass >= 0.005 (mrkA exempt, expected non-former).
 
-Reads:  config.KLEB_CLS, config.KLEB_EMBIDX, config.KLEB_FRAME (biomass for growth filter)
+Reads:  config.input('kleb/embeddings/cls.npy'), config.input('kleb/embeddings/index.csv'), config.input('kleb/master_frame_features.csv') (biomass for growth filter)
 Writes: data/kleb_embeddingUmap_coords.csv   (metric, plateId, wellId, mutant, umap1, umap2)
 """
 import sys
@@ -20,8 +20,8 @@ import umap.umap_ as umap
 from figlib import config, KLEB_FRAMES, KLEB_PLATE_NV, KLEB_MUTANT_MAP, KLEB_NO_GROWTH_FLOOR, KLEB_ORDER
 
 NN, MD, RS = 10, 0.1, 0
-cls = np.load(config.KLEB_CLS)
-idx = pd.read_csv(config.KLEB_EMBIDX)
+cls = np.load(config.input('kleb/embeddings/cls.npy'))
+idx = pd.read_csv(config.input('kleb/embeddings/index.csv'))
 
 
 def _ts(p):
@@ -29,7 +29,7 @@ def _ts(p):
 
 
 idx['mutant'] = idx['plateId'].map(lambda p: KLEB_PLATE_NV.get(_ts(p))).map(KLEB_MUTANT_MAP)
-fr = pd.read_csv(config.KLEB_FRAME, usecols=['plateID', 'wellID', 'biomass'])
+fr = pd.read_csv(config.input('kleb/master_frame_features.csv'), usecols=['plateID', 'wellID', 'biomass'])
 fr['plateId'] = fr['plateID'].astype(str).str.replace(' ', '_', regex=False)
 fr['wellId'] = fr['wellID'].astype(str).str.replace(r'_\d+$', '', regex=True)
 maxBio = fr.groupby(['plateId', 'wellId'])['biomass'].max().rename('_maxBio')

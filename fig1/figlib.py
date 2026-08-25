@@ -1,27 +1,26 @@
-"""fig1 figlib shim - per-figure paths + re-export of the shared library.
+"""fig1 figlib shim — per-figure paths + re-export of the shared library.
 
 Panel scripts import: `from figlib import config, features, plotting, STRAIN_ORDER, DISPLAY_NAMES, STRAIN_COLORS`.
-Shared, figure-agnostic code lives in ../figlib_shared.py.
+Shared, figure-agnostic code lives in paper-figures/figlib_shared.py.
 """
-import os
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # -> repo root for figlib_shared
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # -> paper-figures/ for figlib_shared
 import figlib_shared as _S
 
 features = _S.features
 plotting = _S.plotting
 
-HERE = Path(__file__).resolve().parent      # <repo>/fig1/
-INPUTS = HERE / 'build' / 'inputs'          # place the KiltHub feature tables here (or set the env vars)
+HERE = Path(__file__).resolve().parent      # paper-figures/fig1/
 
 config = _S.make_config(
     HERE,
-    # build-layer inputs (from KiltHub). CLS = DINOv2 CLS embeddings [nWells, 31, 768]; EMBIDX maps rows->wells.
-    WIDE=Path(os.environ.get('FIG1_WIDE_TABLE', INPUTS / 'training_wide.parquet')),
-    CLS=Path(os.environ.get('FIG1_CLS', INPUTS / 'training_cls.npy')),
-    EMBIDX=Path(os.environ.get('FIG1_EMBIDX', INPUTS / 'training_embIndex.csv')),
+    inputs=[
+        'training/wide.parquet',
+        'training/embeddings/cls.npy',
+        'training/embeddings/index.csv',
+    ],
 )
 
 # fig1 shares the 8-mutant training set display with fig2.

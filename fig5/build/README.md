@@ -4,11 +4,18 @@ Two generators produce the 5B-left and 5C-left coordinate tables in `../data/` f
 caches (KiltHub). The other Figure-5 source tables (5A barcode + projection, 5B/5C confusion matrices)
 are produced by their datasets' analysis pipelines and provided as source data (see `../README.md`).
 
-## Inputs (KiltHub; override via env)
+## Inputs
 
-- `kleb_cls.npy` + `kleb_embIndex.csv` and the kleb `master_frame_features.csv` (growth filter) —
-  `FIG5_KLEB_CLS`, `FIG5_KLEB_EMBIDX`, `FIG5_KLEB_FRAME`.
-- `multispecies_10X_cls.npy` + `multispecies_10X_embIndex.csv` — `FIG5_MULTI_CLS`, `FIG5_MULTI_EMBIDX`.
+```bash
+python fetch_data.py fig5        # from the repository root
+```
+
+Logical names resolved via `config.input(...)` — see [`../../INPUTS.md`](../../INPUTS.md):
+
+- `kleb/embeddings/cls.npy`, `kleb/embeddings/index.csv`, `kleb/master_frame_features.csv` (growth filter).
+- `multispecies/embeddings/cls_10X.npy`, `multispecies/embeddings/index_10X.csv`.
+
+Already have the deposit unpacked elsewhere? `export UPULLI_DATA_ROOT=/path/to/deposit` instead.
 
 ## Run
 

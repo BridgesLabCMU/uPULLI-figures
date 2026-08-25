@@ -1,6 +1,6 @@
 # Conda environment for reproducing the paper figures — pinned to the versions used for publication.
-#   conda env create -f environment.yml && conda activate upulli-figures
-name: upulli-figures
+#   conda env create -f environment.yml && conda activate paper-figures
+name: paper-figures
 channels:
   - conda-forge
 dependencies:

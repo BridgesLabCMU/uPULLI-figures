@@ -1,11 +1,12 @@
 """fig1 build 1D: training embedding-UMAP coordinates (source data for Panel 1D).
 
-Stacks DINOv2 CLS embeddings over frames 9-27 (19x768 = 14592 dims) for the growth-filtered 8-mutant
-training wells, then fits UMAP (n_neighbors=25, min_dist=0.25, random_state=0) under two representations:
+Stacks DINOv2 CLS embeddings over the cholerae growth-phase window frames 9-30 (22x768 = 16896 dims)
+for the growth-filtered 8-mutant training wells, then fits UMAP (n_neighbors=25, min_dist=0.25,
+random_state=0) under two representations:
 cosine (L2-normalize + cosine metric) and euclid (StandardScaler + euclidean). Emits per-well coords for
 both; the paper panel uses the euclid view.
 
-Reads:  config.CLS (training_cls.npy), config.EMBIDX (training_embIndex.csv), config.WIDE (labels + growth filter)
+Reads:  config.input('training/embeddings/cls.npy') (training_cls.npy), config.input('training/embeddings/index.csv') (training_embIndex.csv), config.input('training/wide.parquet') (labels + growth filter)
 Writes: data/trainingEmbeddingUmap_coords.csv   (metric, plateId, wellId, mutant, umap1, umap2)
 """
 import sys
@@ -19,11 +20,11 @@ from sklearn.preprocessing import StandardScaler, normalize
 import umap.umap_ as umap
 from figlib import config, features, STRAIN_ORDER
 
-FRAMES, NN, MD, RS = features.KEEP_FRAMES, 25, 0.25, 0
+FRAMES, NN, MD, RS = list(range(9, 31)), 25, 0.25, 0   # cholerae growth-phase window 9-30 (training; reimaging kept at 9-27)
 
-cls = np.load(config.CLS)
-idx = pd.read_csv(config.EMBIDX)
-wide = pd.read_parquet(config.WIDE)
+cls = np.load(config.input('training/embeddings/cls.npy'))
+idx = pd.read_csv(config.input('training/embeddings/index.csv'))
+wide = pd.read_parquet(config.input('training/wide.parquet'))
 bcols = [c for c in wide.columns if re.match(r'^biomass_t\d+$', c)]
 maxBio = wide[bcols].max(axis=1)
 wtMed = pd.DataFrame({'p': wide.plateId, 'b': maxBio, 'm': wide.mutant}).query("m=='WT'").groupby('p')['b'].median()

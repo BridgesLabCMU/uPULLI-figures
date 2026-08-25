@@ -5,7 +5,7 @@ Port of the 'all' combination from the training confusion-matrix analysis: Group
 biomass(log1p) + whole haralick/entropy + the 12 colony bases (frames 9-27; colony 9-28). Emits the
 mean row-normalized confusion matrix (the panel's balanced accuracy = mean of its diagonal).
 
-Reads:  config.WIDE (training_wide.parquet)
+Reads:  config.input('training/wide.parquet') (training_wide.parquet)
 Writes: data/all_confusion_cv.csv
 """
 import sys
@@ -22,7 +22,7 @@ from sklearn.metrics import confusion_matrix, balanced_accuracy_score
 from figlib import config, features, STRAIN_ORDER
 
 randomState, nRepeats, nSplits = 0, 5, 5
-minFrame, maxFrame = 9, 28
+minFrame, maxFrame = 9, 30   # colony window: exclude pre-colony frames (colonies segmentable from t9); start-frame consistent with the 9-27 UMAP filter + multispecies. biomass/whole use full 0-30.
 allowed = features.ALLOWED_COLONY_BASES
 
 
@@ -43,7 +43,7 @@ def selColony(cols):
     return out
 
 
-df = pd.read_parquet(config.WIDE)
+df = pd.read_parquet(config.input('training/wide.parquet'))
 bcols = selBio(df.columns)
 maxBio = df[bcols].max(axis=1)
 wtMed = (pd.DataFrame({'plateId': df['plateId'], 'maxBio': maxBio, 'mutant': df['mutant']})
