@@ -3,14 +3,47 @@ message: "If you use this software, please cite the µPULLI manuscript and this 
 title: "uPULLI-figures: figure-reproduction code and source data for the µPULLI manuscript"
 abstract: >-
   Self-contained code and source-data tables that regenerate the figures of the µPULLI
-  manuscript (V. cholerae biofilm phenotyping): reimaging phenotype landscape, training-set
-  classification (numerical + DINOv2 embeddings), clean-deletion projection, and cross-system
+  manuscript, "Label-free imaging reveals that cellular physiology is encoded in bacterial
+  community architecture": reimaging phenotype landscape, training-set classification
+  (numerical + DINOv2 embeddings), clean-deletion projection, and cross-system
   generalization (compounds, K. pneumoniae, multispecies).
 authors:
-  - name: "[FILL: author list]"
-    affiliation: "Bridges Lab, Carnegie Mellon University"
+  - given-names: "Seh Na S."
+    family-names: "Mellick"
+    affiliation: "Department of Biological Sciences, Carnegie Mellon University, Pittsburgh, PA, USA; Ray and Stephanie Lane Computational Biology Department, Carnegie Mellon University, Pittsburgh, PA, USA"
+  - given-names: "Jesse J."
+    family-names: "Derringer"
+    affiliation: "Department of Biological Sciences, Carnegie Mellon University, Pittsburgh, PA, USA"
+  - given-names: "Darin"
+    family-names: "Boyes"
+    affiliation: "Department of Biological Sciences, Carnegie Mellon University, Pittsburgh, PA, USA; Ray and Stephanie Lane Computational Biology Department, Carnegie Mellon University, Pittsburgh, PA, USA"
+  - given-names: "Gillian"
+    family-names: "Croteau"
+    affiliation: "Department of Biological Sciences, Carnegie Mellon University, Pittsburgh, PA, USA"
+  - given-names: "Madeline"
+    family-names: "Burke"
+    affiliation: "Department of Biological Sciences, Carnegie Mellon University, Pittsburgh, PA, USA"
+  - given-names: "Steven"
+    family-names: "Gifford"
+    affiliation: "Department of Biological Sciences, Carnegie Mellon University, Pittsburgh, PA, USA"
+  - given-names: "Drew J."
+    family-names: "Stark"
+    affiliation: "Department of Medicine, Division of Infectious Diseases, University of Pittsburgh, Pittsburgh, PA, USA"
+  - given-names: "Laura A."
+    family-names: "Mike"
+    affiliation: "Department of Medicine, Division of Infectious Diseases, University of Pittsburgh, Pittsburgh, PA, USA"
+  - given-names: "Sophia"
+    family-names: "Turecki"
+    affiliation: "Department of Biological Sciences, Carnegie Mellon University, Pittsburgh, PA, USA"
+  - given-names: "Oana"
+    family-names: "Carja"
+    affiliation: "Ray and Stephanie Lane Computational Biology Department, Carnegie Mellon University, Pittsburgh, PA, USA"
+  - given-names: "Irina V."
+    family-names: "Mikheyeva"
+    affiliation: "Department of Biological Sciences, Carnegie Mellon University, Pittsburgh, PA, USA"
+  - given-names: "Andrew A."
+    family-names: "Bridges"
+    affiliation: "Department of Biological Sciences, Carnegie Mellon University, Pittsburgh, PA, USA"
 license: MIT
 repository-code: "https://github.com/BridgesLabCMU/uPULLI-figures"
-# version: v1.0.0            # set at the tagged release
-# date-released: YYYY-MM-DD
 # doi: 10.XXXX/zenodo.XXXXX  # DOI of the archived snapshot (KiltHub/Zenodo)
