@@ -18,7 +18,7 @@ figures/             rendered PNG/SVG output
 ## From raw data to panels (full chain)
 
 1. **Raw brightfield timelapses** -> *(µPULLI image pipeline, separate repo `[pipeline repo]`)* ->
-   **processed images + masks** (BioImage Archive `[S-BIAD#####]`).
+   **processed images + masks** (BioImage Archive [`S-BIAD3830`](https://doi.org/10.6019/S-BIAD3830)).
 2. Processed images -> *(µPULLI feature extraction)* -> the clean-deletion plate feature tables +
    the reimaging atlas feature table (CMU KiltHub `[DOI]`).
 3a. **4A:** clean-deletion wells are transformed onto the reimaging UMAP by the projection step

@@ -19,7 +19,7 @@ figures/             rendered PNG/SVG output
 ## From raw data to panels (full chain)
 
 1. **Raw brightfield timelapses** → *(µPULLI image pipeline — separate repo `[pipeline repo]`)* →
-   **processed images + masks** (BioImage Archive `[S-BIAD#####]`).
+   **processed images + masks** (BioImage Archive [`S-BIAD3830`](https://doi.org/10.6019/S-BIAD3830)).
 2. Processed images → *(µPULLI feature extraction — `multiWellAnalysis` + DINOv2)* →
    **`master_frame_features.csv`**: the original full per-(well, frame) training feature set (KiltHub `[DOI]`).
 3. `master_frame_features.csv` → **`build/0_buildTrainingWide.py`** → **`training_wide.parquet`**

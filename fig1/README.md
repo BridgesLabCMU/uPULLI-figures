@@ -19,7 +19,7 @@ figures/             rendered PNG/SVG output
 ## From raw data to panels (full chain)
 
 1. **Raw brightfield timelapses** -> *(µPULLI image pipeline, separate repo `[pipeline repo]`)* ->
-   **processed images + masks** (BioImage Archive `[S-BIAD#####]`).
+   **processed images + masks** (BioImage Archive [`S-BIAD3830`](https://doi.org/10.6019/S-BIAD3830)).
 2. Processed images -> *(µPULLI feature extraction, DINOv2 route)* -> **`training_cls.npy`** (per-well
    CLS embeddings [nWells, 31, 768]) + `training_embIndex.csv` (KiltHub `[DOI]`).
 3. `training_cls.npy` -> **`build/1D`** (stack frames 9-27 -> UMAP) / **`build/1E`** (stack -> GroupKFold

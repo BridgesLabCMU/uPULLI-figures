@@ -27,7 +27,7 @@ figures/             rendered PNG/SVG output
 ## From raw data to panels (full chain)
 
 1. **Raw brightfield timelapses** -> *(µPULLI image pipeline, separate repo `[pipeline repo]`)* ->
-   **processed images + masks** (BioImage Archive `[S-BIAD#####]`).
+   **processed images + masks** (BioImage Archive [`S-BIAD3830`](https://doi.org/10.6019/S-BIAD3830)).
 2. Processed images -> *(µPULLI feature extraction, DINOv2 route)* -> **`training_patchmean.npy`** (per-well
    mean-pooled patch descriptors [nWells, 31, 768]) + `training_embIndex.csv` (KiltHub `[DOI]`). The
    patch-mean tensor averages the 9 DINOv2 patch tokens per (well, frame); it is deposited as

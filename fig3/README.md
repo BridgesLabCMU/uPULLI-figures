@@ -41,7 +41,7 @@ font (matplotlib falls back silently if it's missing; data/coordinates are unaff
 Each layer is a deposited artifact; each arrow is a script. You can enter at any level.
 
 1. **Raw brightfield timelapses** → *(µPULLI image pipeline — separate repo `[pipeline repo]`)* →
-   **processed images + segmentation masks** (BioImage Archive `[S-BIAD#####]`).
+   **processed images + segmentation masks** (BioImage Archive [`S-BIAD3830`](https://doi.org/10.6019/S-BIAD3830)).
 2. Processed images → *(µPULLI feature extraction — `multiWellAnalysis` + DINOv2, same pipeline repo)* →
    **`master_frame_features.csv`** — the *original full* per-(well, frame) numerical feature set
    (+ per-colony table + embeddings) (CMU KiltHub `[DOI]`).
