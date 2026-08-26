@@ -90,9 +90,10 @@ dictionary for every table, and the processing chain from the original feature s
 
 | Layer | Artifact | Deposited at | Produced by |
 |---|---|---|---|
-| Raw | brightfield timelapses | institutional NAS (on request) | — |
-| Images | processed images + segmentation masks | BioImage Archive [`S-BIAD3830`](https://doi.org/10.6019/S-BIAD3830) | µPULLI image pipeline `[pipeline repo]` |
-| Features | full feature sets + DINOv2 embeddings + gene index | CMU KiltHub `[DOI]` | µPULLI feature extraction `[pipeline repo]` |
+| Raw | brightfield timelapses | BioImage Archive [`S-BIAD3830`](https://doi.org/10.6019/S-BIAD3830) | — |
+| Images | processed images + segmentation masks | BioImage Archive [`S-BIAD3830`](https://doi.org/10.6019/S-BIAD3830) | [µPULLI-I](https://github.com/BridgesLabCMU/uPULLI-I) |
+| Features | full feature sets + gene index | CMU KiltHub `[DOI]` | [µPULLI-I](https://github.com/BridgesLabCMU/uPULLI-I) |
+| Embeddings | DINOv2 CLS + patch descriptors | CMU KiltHub `[DOI]` | [µPULLI-DL](https://github.com/BridgesLabCMU/uPULLI-DL) |
 | Tables | figure source-data CSVs (`fig*/data/`) | KiltHub `[DOI]` + this repo | `fig*/build/` |
 | Datasets | **Data S1** — full transposon-screen results (every feature + phenotype call, per well and per frame) | KiltHub `[DOI]` | `figS4/build/DataS1_transposonScreen.py` |
 | Figures | panels (`fig*/figures/`) | this repo | `fig*/render/` |
@@ -104,5 +105,5 @@ Tables → Figures (and the feature-set → table reshaping in each `build/`).
 
 Derived/tabular data (feature vectors, UMAP coordinates, per-microcolony measurements, biomass
 trajectories) → CMU KiltHub `[DOI]`. Processed image data + segmentation masks → BioImage Archive
-[`S-BIAD3830`](https://doi.org/10.6019/S-BIAD3830); raw timelapses on institutional storage, available on request. Code (this repository) →
+[`S-BIAD3830`](https://doi.org/10.6019/S-BIAD3830); raw timelapses in the same BioImage Archive deposit. Raw RNA sequencing reads → NCBI SRA, BioProject `PRJNA1513060`. Code (this repository) →
 Bridges Lab GitHub, MIT license.

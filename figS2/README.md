@@ -18,7 +18,7 @@ figures/             rendered PNG/SVG output
 
 ## From raw data to panels (full chain)
 
-1. **Raw brightfield timelapses** -> *(µPULLI image + feature pipeline, separate repo `[pipeline repo]`)* ->
+1. **Raw brightfield timelapses** -> *([µPULLI-I](https://github.com/BridgesLabCMU/uPULLI-I))* ->
    **`training_wide.parquet`** (per-well `<feature>_t<frame>` matrix; KiltHub `[DOI]`).
 2. `training_wide.parquet` -> **`build/S2*.py`** (GroupKFold RF classification) -> **source-data CSVs in
    `data/`**.

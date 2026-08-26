@@ -40,7 +40,7 @@ font (matplotlib falls back silently if it's missing; data/coordinates are unaff
 
 Each layer is a deposited artifact; each arrow is a script. You can enter at any level.
 
-1. **Raw brightfield timelapses** → *(µPULLI image pipeline — separate repo `[pipeline repo]`)* →
+1. **Raw brightfield timelapses** → *([µPULLI-I](https://github.com/BridgesLabCMU/uPULLI-I))* →
    **processed images + segmentation masks** (BioImage Archive [`S-BIAD3830`](https://doi.org/10.6019/S-BIAD3830)).
 2. Processed images → *(µPULLI feature extraction — `multiWellAnalysis` + DINOv2, same pipeline repo)* →
    **`master_frame_features.csv`** — the *original full* per-(well, frame) numerical feature set
@@ -52,7 +52,7 @@ Each layer is a deposited artifact; each arrow is a script. You can enter at any
    **source-data CSVs in `data/`** (KiltHub `[DOI]` + bundled in this repo).
 5. `data/` CSVs → **`render/3*.py`** → the **panels** in `figures/`.
 
-Steps 1–2 are the µPULLI pipeline and live in a separate repository (cite `[pipeline repo]`); **steps
+Steps 1–2 are the µPULLI pipeline and live in separate repositories ([µPULLI-I](https://github.com/BridgesLabCMU/uPULLI-I) for imaging + features, [µPULLI-DL](https://github.com/BridgesLabCMU/uPULLI-DL) for the DINOv2 embeddings); **steps
 3–5 are in this repo.** `render/` (step 5) needs only the bundled `data/`; `build/` (steps 3–4) needs
 the KiltHub feature set — see `build/README.md`. Fill the bracketed deposit IDs at submission.
 

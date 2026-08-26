@@ -56,6 +56,15 @@ def flatName(logical):
     return logical.rstrip('/').replace('/', '__')
 
 
+# Never deposit these, wherever they turn up in a source directory: shell history, OS cruft, and
+# superseded artifacts that would confuse a reader.
+SKIP_NAMES = {'.Rhistory', '.DS_Store', 'Thumbs.db', 'Master_Volcano_Explorer.html'}
+
+
+def keep(path):
+    return path.name not in SKIP_NAMES and not path.name.endswith(('.pyc', '.Rhistory~'))
+
+
 spec = json.loads((HERE / 'inputs.json').read_text())
 local = json.loads((HERE / 'inputs.local.json').read_text())
 extras = local.pop('extras', {})     # non-input material deposited alongside (e.g. robot protocols)
@@ -79,7 +88,7 @@ for name, entry in sorted(spec['inputs'].items()):
             print(f'  zipping {name} -> {out.name}')
             with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as zf:
                 for f in sorted(src.rglob('*')):
-                    if f.is_file():
+                    if f.is_file() and keep(f):
                         zf.write(f, f.relative_to(src))
     else:
         if out.exists() or out.is_symlink():
@@ -112,7 +121,7 @@ if not args.no_zip:
             src = Path(os.path.realpath(local[name]))
             if src.is_dir():
                 for f in sorted(src.rglob('*')):
-                    if f.is_file():
+                    if f.is_file() and keep(f):
                         zf.write(f, f'{name.rstrip("/")}/{f.relative_to(src)}')
             else:
                 zf.write(src, name)
@@ -149,7 +158,7 @@ for name, src in sorted(extras.items()):
     out = DEPOSIT / f'{name}.zip'
     with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as zf:
         for f in sorted(src.rglob('*')):
-            if f.is_file() and not (curated.exists() and f.name.upper().startswith('NOTES')):
+            if f.is_file() and keep(f) and not (curated.exists() and f.name.upper().startswith('NOTES')):
                 zf.write(f, f.relative_to(src))
         if curated.exists():
             zf.write(curated, 'NOTES.txt')

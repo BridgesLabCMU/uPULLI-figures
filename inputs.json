@@ -209,7 +209,7 @@
       "sha256": "3fca45ca075b307517b7fe52848aeb012274f8fa84804315351616f29d3d990f"
     },
     "rnaseq/": {
-      "description": "Directory of per-strain differential-expression tables (<strain>_allGenes.csv): the Fig 4E biofilm-gene heatmap and the Fig S8B-D volcano plots. Sequencing data are deposited separately under their own accession.",
+      "description": "Directory of per-strain differential-expression tables (<strain>_allGenes.csv) for the Fig 4E biofilm-gene heatmap and the Fig S8B-D volcano plots. Raw sequencing reads are deposited in the NCBI Sequence Read Archive under BioProject PRJNA1513060.",
       "figures": [
         "fig4",
         "figS8"
