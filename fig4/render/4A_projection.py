@@ -17,11 +17,23 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+import argparse
 from figlib import config, plotting, CLEANDEL, CLEANDEL_DISPLAY
 
 plotting.setStyle()
 KEEP_FUNCS = ['Biotin Biosynthesis', 'Pyruvate Flux', 'O-Antigen Biosynthesis']
-N_REPS, SEED = 9, 42
+SEED = 42
+
+ap = argparse.ArgumentParser()
+ap.add_argument('--reps', type=int, default=0, help='replicates drawn per mutant (0 = all)')
+ap.add_argument('--rep-alpha', type=float, default=0.38, help='opacity of the replicate cloud')
+args = ap.parse_args()
+
+# matplotlib sizes a marker by the area of its unit bounding box, so a square carries twice the ink of
+# a triangle or diamond at the same `s` and reads as bigger. These factors even out the perceived size
+# so the three shapes are comparable at a glance -- all are centred on their true coordinate.
+SHAPE_SCALE = {'^': 1.45, 's': 1.0, 'D': 1.30, 'o': 1.15}
+REP_S, CEN_S = 110, 1150
 
 reim = pd.read_csv(config.TABLES / 'reimaging_landscape_coords.csv')
 reim['geneLocus'] = reim['geneLocus'].fillna('')
@@ -31,8 +43,11 @@ funcOfRow = reim['geneLocus'].map(keptLoci)
 isGrey = funcOfRow.isna() & ~isWT
 
 proj = pd.read_csv(config.TABLES / 'cleanDeletions_projectedCoords.csv')
-proj = (proj[proj['mutant'].isin(CLEANDEL)].groupby('mutant', group_keys=False)
-        .apply(lambda g: g.sample(n=min(N_REPS, len(g)), random_state=SEED)).reset_index(drop=True))
+proj = proj[proj['mutant'].isin(CLEANDEL)]
+if args.reps:
+    proj = (proj.groupby('mutant', group_keys=False)
+            .apply(lambda g: g.sample(n=min(args.reps, len(g)), random_state=SEED)))
+proj = proj.reset_index(drop=True)
 projLabs = [m for m in CLEANDEL if m in set(proj['mutant'].dropna())]
 
 fig, ax = plt.subplots(figsize=(15, 14)); ax.set_box_aspect(1)
@@ -52,13 +67,23 @@ if isWT.any():
     funcH.append(Line2D([0], [0], marker='o', linestyle='none', markersize=16, markerfacecolor='black',
                         markeredgecolor='black', label='WT (reimaging)'))
 
+# Each mutant: the full replicate cloud drawn faint and small, then its centroid as one large hollow
+# black marker on top -- heavy stroke, no fill, so the landscape underneath stays visible. The centroid
+# is what the eye should land on; the cloud shows the spread.
 projH = []
 for m in projLabs:
-    sub = proj[proj['mutant'] == m]; mk = CLEANDEL[m][0]
-    ax.scatter(sub['umap1'], sub['umap2'], marker=mk, s=260, facecolors='none', edgecolors='black',
-               linewidths=2.2, alpha=1.0, zorder=8)
-    projH.append(Line2D([0], [0], marker=mk, linestyle='none', markersize=16, markerfacecolor='none',
-                        markeredgecolor='black', markeredgewidth=2.2, label=f'{CLEANDEL_DISPLAY[m]} (clean del.)'))
+    sub = proj[proj['mutant'] == m]
+    mk = CLEANDEL[m][0]
+    scale = SHAPE_SCALE.get(mk, 1.0)
+    ax.scatter(sub['umap1'], sub['umap2'], marker=mk, s=REP_S * scale, facecolors='none',
+               edgecolors='black', linewidths=1.2, alpha=args.rep_alpha, zorder=7)
+    cx, cy = sub['umap1'].mean(), sub['umap2'].mean()
+    ax.scatter([cx], [cy], marker=mk, s=CEN_S * scale, facecolors='none', edgecolors='black',
+               linewidths=4.0, alpha=1.0, zorder=9)
+    projH.append(Line2D([0], [0], marker=mk, linestyle='none', markersize=20 * (scale ** 0.5),
+                        markerfacecolor='none', markeredgecolor='black', markeredgewidth=3.0,
+                        label=f'{CLEANDEL_DISPLAY[m]} (clean del.)'))
+    print(f'  {m:6s} n={len(sub):3d}  centroid ({cx:.2f}, {cy:.2f})')
 
 pad = 0.5
 ax.set_xlim(reim['umap1'].min() - pad, reim['umap1'].max() + pad)
