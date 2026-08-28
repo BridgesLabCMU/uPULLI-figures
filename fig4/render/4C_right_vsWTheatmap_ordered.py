@@ -5,7 +5,7 @@ conditions, columns = features, feature-group brackets along the top. Each cell 
 reimaging-atlas sigma at the condition's peak-biomass frame (WT already dropped).
 
 Reads:  data/cleanDel_vsWT_horizontal_matrix.csv
-Writes: figures/4C_right_vsWTheatmap.{png,svg}
+Writes: figures/4C_right_vsWTheatmap_ordered.{png,svg}
 """
 import sys
 import re

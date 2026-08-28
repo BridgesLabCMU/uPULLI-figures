@@ -37,6 +37,7 @@ bracketed IDs at submission.
 | **4A** projection onto reimaging landscape | `4A_projection.py` | `cleanDeletions_projectedCoords.csv` + `reimaging_landscape_coords.csv` | upstream projection (see note) |
 | **4C left** biomass over time | `4C_left_biomassOverTime.py` | `biomassOverTime_normWTpeak.csv` | `4C_left_biomassOverTime.py` |
 | **4C right** WT-normalized feature heatmap | `4C_right_vsWTheatmap.py` | `cleanDel_vsWT_horizontal_matrix.csv` | `4C_right_vsWTheatmap.py` |
+| **4C right (alt)** same matrix, conditions reordered Δ*bioD* / Δ*pdhE2* / Δ*manA* | `4C_right_vsWTheatmap_ordered.py` | same table | same build |
 | **4E** RNA-seq biofilm-gene heatmap | `4E_rnaseqHeatmap.py` | `rnaseq_logFC_matrix.csv` | `4E_rnaseqHeatmap.py` |
 
 **Note on 4A:** `cleanDeletions_projectedCoords.csv` is produced by the projection step of the analysis
