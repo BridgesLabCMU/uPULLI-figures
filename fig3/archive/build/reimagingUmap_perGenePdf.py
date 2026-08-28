@@ -13,7 +13,7 @@ import sys
 import argparse
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # -> fig3/ for figlib
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # -> fig3/ for figlib (archive/ is one level deeper)
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt

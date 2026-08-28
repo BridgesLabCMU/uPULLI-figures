@@ -27,7 +27,6 @@ python render/3B_reimagingUmap_functionalAnnotations.py      # Panel 3B (main la
 python render/3Btop_reimagingUmap_centroidsByFunction.py     # Panel 3B top inset
 python render/3Bbottom_reimagingUmap_centroidsByLocus.py     # Panel 3B bottom inset
 python render/3D_dendrogramHeatmap.py                        # Panel 3D (dendrogram + heatmap)
-python render/reimagingUmap_perGenePdf.py                    # Supplement (per-gene PDF)
 ```
 
 Each reads only the bundled `data/` tables and writes to `figures/`. To regenerate the tables
@@ -62,7 +61,9 @@ the KiltHub feature set — see `build/README.md`. Fill the bracketed deposit ID
 biomass panel that used to be 3A. That retired panel now lives in **`archive/`**
 (`archive/{render,build}/reimagingUmap_coloredByBiomass.py`) — still runnable for reference, but not a
 panel; its source table `coloredByBiomassNormWT_plasma_nn10_md0.10_coords.csv` stays in `data/` so it
-can render. **3C** is
+can render. The **per-gene UMAP PDF** (one landscape page per mutant) is archived on the same terms as
+of this revision — `archive/{render,build}/reimagingUmap_perGenePdf.py`, no longer in the paper, with
+`reimagingUmap_nn10_md0.10_perGene_coords.csv` kept in `data/` so it still renders. **3C** is
 representative microscopy and has no script here — those stills come from the image tree via
 `v2/reimaging/representativeImages/pullRepresentativeFrames.py`, outside this package.
 
@@ -82,7 +83,6 @@ pair of files (`3A_rankedTransposonBiomass_legend.{png,svg}`).
 | **3B** bottom inset (by locus) | `3Bbottom_reimagingUmap_centroidsByLocus.py` | `centroidsByLocus_nn10_md0.10_centroids.csv` (+ landscape coords) | `3Bbottom_reimagingUmap_centroidsByLocus.py` |
 | **3C** representative images | — | — | not in this repo (image panels) |
 | **3D** dendrogram + heatmap | `3D_dendrogramHeatmap.py` | `functional_peakBiomass_featureMatrix.csv`, `functional_pcaLinkage_cluster_order.csv`, `functional_pcaLinkage_linkage.npy` | `3D_generateDendogramHeatmaps-withPCA.py` |
-| **Supp.** per-gene PDF | `reimagingUmap_perGenePdf.py` | `reimagingUmap_nn10_md0.10_perGene_coords.csv` | `reimagingUmap_perGenePdf.py` |
 
 **The manifold fit** (step 4, applied identically for every panel): feature filter frames 9–27 (biomass
 + whole-image entropy/haralick; drop skew/kurtosis/cv) → drop 4 mislocalized loci → `fillna(0)` → drop
@@ -136,7 +136,7 @@ Coloring in the figure: grey = unclassified; six functional-group colors (see be
 | **locusNumRaw** | numeric part of the locus tag (per-chromosome), drives the split Chr I / Chr II colormaps (`_byChr` plot) |
 | **locusNum** | Chr I locus number as-is; Chr II shifted up by max Chr I number → single continuous scale for the viridis plot |
 
-### `reimagingUmap_nn10_md0.10_perGene_coords.csv`: per-gene supplement PDF (3669 rows)
+### `reimagingUmap_nn10_md0.10_perGene_coords.csv`: archived per-gene PDF (3669 rows)
 | column | meaning |
 |---|---|
 | plateId, wellId, mutant, geneLocus, function, umap1, umap2 | as above |
