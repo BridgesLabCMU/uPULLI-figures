@@ -29,10 +29,8 @@ Running `S8BCD_volcano.py` with no `--mutant` renders all three panels; the pane
 per mutant in `figlib.RNASEQ_PANELS`, so outputs are `S8B_volcano_BioD`, `S8C_volcano_PdhE2`,
 `S8D_volcano_ManA`.
 
-> Also in this package: `render/S8_trainingFeatureDendrogram.py`, the feature-clustered training
-> heatmap. It was **promoted to Figure 2C** (`fig2/render/2C_trainingHeatmap.py`) and is kept here only
-> for reference — it is not an S8 panel. ⚠ Its layout has a known bug (`yaxis.tick_right()` collides
-> with the family strip and colorbar); the fixed version is the fig2 copy.
+> The feature-clustered training heatmap that once sat here has been removed: it is Figure 2C, rendered
+> by `fig2/render/2C_trainingHeatmap.py`, and is not an S8 panel.
 
 ## Panel details
 
@@ -75,9 +73,6 @@ it has no counterpart in the imaging clean-deletion set.
 - **`luxPeak_normWT.csv`** — `condition` (WT / PdhE1 / BioD / ManA / PdhE2), `well`, `peakRLU` (max
   Lum/OD over 41 timepoints), `peakNormWT` (peak ÷ mean WT peak). 45 wells, 9 per condition; WT
   reference 735.2 RLU. Medians: WT 1.00, Δ*bioD* 7.19, Δ*pdhE2* 3.98, Δ*manA* 1.66 (Δ*pdhE1* 4.90).
-- **`trainingHeatmap_peakBiomass_featureMatrix.csv`** — the Fig 2C matrix, used only by the retired
-  training-dendrogram script above.
-
 ## Build inputs (deposited)
 
 - **`rnaseq/`** — the per-contrast `<strain>_allGenes.csv` differential-expression tables (shared with
