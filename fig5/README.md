@@ -22,8 +22,8 @@ figures/             rendered PNG/SVG output
 
 | Panel | `render/` script | `data/` table(s) | source of the table |
 |---|---|---|---|
-| **5A left** compound projection (biotin view) | `A_left_compoundProjection.py` | `compounds_projectedCoords.csv` + `reimaging_landscape_coords.csv` | upstream projection (fitted reducer) |
-| **5A left (alt)** same view + untreated Δ*bioD* | `A_left_compoundProjection_bioDvariant.py` | `compounds_projectedCoords.csv` + `cleanDeletions_projectedCoords.csv` + `reimaging_landscape_coords.csv` | upstream projections (fitted reducer) |
+| **5A left** compound projection (biotin view): WT, WT+DMSO, WT + 100 µM MAC13772, Tn *bioA–D*, Δ*bioD*, Δ*bioD*+biotin | `A_left_compoundProjection_bioDvariant.py` | `compounds_projectedCoords.csv` + `cleanDeletions_projectedCoords.csv` + `reimaging_landscape_coords.csv` | upstream projections (fitted reducer) |
+| 5A-left earlier version, three compound conditions only (no untreated Δ*bioD*) — **superseded** | `A_left_compoundProjection.py` | `compounds_projectedCoords.csv` + `reimaging_landscape_coords.csv` | upstream projection (fitted reducer) |
 | **5A right** biotin feature barcode (vsWT) | `A_right_biotinBarcode.py` | `compounds_biotinBarcode_vsWT_matrix.csv` | compounds vsWT-barcode analysis |
 | **5B left** *K. pneumoniae* embedding UMAP | `B_left_klebUmap.py` | `kleb_embeddingUmap_coords.csv` | **`build/B_left_klebUmap.py`** |
 | **5B right** *K. pneumoniae* RF confusion | `B_right_klebConfusion.py` | `kleb_embeddings_confusion_cv.csv` | kleb embedding RF (RepeatedStratifiedKFold) |
@@ -44,8 +44,8 @@ Fig 4's, come from the reimaging projection step (a fitted UMAP `transform`, an 
   0.005, mrkA exempt (expected non-former). Embedding window: CLS frames 9–24. UMAP uses the euclid rep.
 - **C (multispecies):** 8-species panel, analyzed **within** 100% LB at 10X; embedding window frames
   9–23; RF CV is GroupKFold by plate; balanced accuracy = mean of the confusion diagonal.
-- **5A-left alternative** (`A_left_compoundProjection_bioDvariant.py`): the published 5A left plus the
-  **untreated Δ*bioD* clean deletion**, so the chemical block, the deletion and the rescue appear on one
+- **5A left** (`A_left_compoundProjection_bioDvariant.py`) is the published panel. It carries the
+  **untreated Δ*bioD* clean deletion** alongside the compound conditions, so the chemical block, the deletion and the rescue appear on one
   landscape — WT+DMSO open black ○, WT + 100 µM MAC13772 open purple ◇, Δ*bioD*+biotin open red ▽,
   Δ*bioD* open grey (#787878) △; background = grey atlas, Tn *bioA–D* orange with black edges, reimaging
   WT semi-transparent black. The two Δ*bioD* conditions come from **different experiments** (treated from
