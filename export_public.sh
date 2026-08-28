@@ -6,7 +6,7 @@
 # .gitignore excludes (the manuscript PDF, SUPPLEMENTAL_LEGENDS.md, inputs.local.json, build inputs,
 # __pycache__, rendered figures) is never copied, so the public tree cannot leak it even by accident.
 #
-#   bash export_public.sh                      # -> ~/multiphenotype-figs
+#   bash export_public.sh                      # -> ~/uPULLI-figures (the published repo clone)
 #   bash export_public.sh /some/other/path
 #
 # Re-run any time. Existing files are overwritten and files no longer tracked are removed, so the
@@ -14,7 +14,11 @@
 set -euo pipefail
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEST="${1:-$HOME/multiphenotype-figs}"
+# The published repo is BridgesLabCMU/uPULLI-figures; ~/uPULLI-figures is its clone. Exporting
+# straight into it means `git status` there shows exactly what this export changed, and the
+# rsync below preserves .git. (Before 2026-08 this defaulted to ~/multiphenotype-figs, which had
+# no remote -- exports went nowhere while the published repo drifted ahead of this working copy.)
+DEST="${1:-$HOME/uPULLI-figures}"
 STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 
@@ -36,14 +40,26 @@ csv=$(git -C "$STAGE" ls-files 'fig*/data/*.csv' | wc -l)
 echo "exported $n files ($csv bundled source-data CSVs)"
 
 # ── gates: things that must never appear in the public copy ──
+#
+# Every gate below checks the EXPORTED FILE SET ($STAGE/.filelist, resolved under $DEST), never
+# $DEST as a whole. $DEST is a live clone of the published repo: people render figures in it and
+# Python leaves __pycache__ there. Those are local, gitignored, and none of this script's
+# business -- scanning the whole directory reports them as export failures.
 fail=0
-leak=$(grep -rIl -e '/mnt/' -e '/home/' -e '_MONO' --include='*.py' "$DEST" 2>/dev/null \
-       | grep -v -e 'fetch_data.py' -e 'stage_inputs.py' || true)
+exported() { sed -z "s|^|$DEST/|" "$STAGE/.filelist"; }
+
+# Absolute paths, in EVERY text file rather than only *.py: a mount point is just as leaky in a
+# README, a JSON manifest, a CSV header or an interactive HTML page. -I skips binaries.
+# export_public.sh is exempt because it necessarily contains these patterns itself (this line).
+leak=$(exported | xargs -0 grep -Il -e '/mnt/' -e '/home/' -e '_MONO' 2>/dev/null \
+       | grep -v -e 'fetch_data.py' -e 'stage_inputs.py' -e 'export_public.sh' || true)
 [ -n "$leak" ] && { echo "FAIL absolute paths in: $leak"; fail=1; }
+
 for f in "Multiphenotype Manuscript-2.pdf" SUPPLEMENTAL_LEGENDS.md inputs.local.json; do
-  [ -e "$DEST/$f" ] && { echo "FAIL excluded file present: $f"; fail=1; }
+  grep -qzxF "$f" "$STAGE/.filelist" && { echo "FAIL excluded file exported: $f"; fail=1; }
 done
-find "$DEST" -name '__pycache__' -o -path '*/build/inputs/*' | grep -q . && {
-  echo "FAIL build inputs or bytecode copied"; fail=1; }
+
+tr '\0' '\n' < "$STAGE/.filelist" | grep -qE '(^|/)__pycache__/|/build/inputs/' && {
+  echo "FAIL build inputs or bytecode exported"; fail=1; }
 [ "$csv" -lt 80 ] && { echo "FAIL only $csv data CSVs exported"; fail=1; }
 [ "$fail" -eq 0 ] && echo "gates: clean" || { echo "gates: FAILED"; exit 1; }
