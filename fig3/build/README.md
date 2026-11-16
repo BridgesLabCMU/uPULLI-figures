@@ -29,12 +29,16 @@ Already have the deposit unpacked elsewhere? `export UPULLI_DATA_ROOT=/path/to/d
 ```bash
 python build/0_buildCollapsedWide.py                       # master_frame_features.csv -> reimaging_collapsedWide.parquet (WIDE)
 python build/3B_reimagingUmap_functionalAnnotations.py     # -> data/reimagingLandscape_..._coords.csv (refits UMAP)
-python build/3A_reimagingUmap_coloredByBiomass.py          # -> data/coloredByBiomass..._coords.csv
+python archive/build/reimagingUmap_coloredByBiomass.py      # -> data/coloredByBiomass..._coords.csv (retired panel; now under archive/)
 python build/3Btop_reimagingUmap_centroidsByFunction.py    # -> data/centroidsByFunction..._centroids.csv
 python build/3Bbottom_reimagingUmap_centroidsByLocus.py    # -> data/centroidsByLocus..._centroids.csv
 python build/3D_generateDendogramHeatmaps-withPCA.py       # -> data/functional_*.csv + linkage.npy
 python build/reimagingUmap_perGenePdf.py                   # -> data/reimagingUmap_..._perGene_coords.csv
+python build/reimagingUmap3d.py                            # -> data/reimagingLandscape3d_..._coords.csv (separate n_components=3 fit; ~4 min)
 ```
+
+`reimagingUmap3d.py` is the 3B recipe with `n_components=3` and is **not** Panel 3D — see the
+"Not a panel: the 3-D view" note in `../README.md`. It needs only `reimaging/collapsedWide.parquet`.
 
 CSVs are written to `../data/`; any figures these emit go to `../figures/`.
 

@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 """interactive build — Interactive Plot 3: dendrogram + heatmap timelapse of the reimaging atlas.
 
-The interactive counterpart of Fig. S6A: the same Ward dendrogram over PCA-50 per-mutant centroids
-and the same z-scored heatmap, but the heatmap animates across the imaging timecourse and every
-mutant is clickable, opening its replicates' images — which FOLLOW the time slider, so a genotype can
-be watched developing next to its features.
+The interactive counterpart of Fig. S6A AND Fig. 3D: the same Ward dendrograms over PCA-50
+per-mutant centroids and the same z-scored heatmap, but the heatmap animates across the imaging
+timecourse and every mutant is clickable, opening its replicates' images — which FOLLOW the time
+slider, so a genotype can be watched developing next to its features.
+
+Two views, switched in the page:
+  Full atlas             all 158 clustered mutants                    (the printed Fig. S6A)
+  Functional annotations the 50 leaves of the six curated pathways + WT (the printed Fig. 3D)
+They are one object seen at two scopes: cells are z-scored across the WHOLE atlas in both, so a
+mutant keeps its color when you switch, and the subset view only reclusters and re-orders those 50
+leaves (its own linkage, exactly as the static panel computes it).
 
 Self-contained single-file HTML (thumbnails inlined as base64 data URIs; no server, no asset
-folder). Cell colors are precomputed with the same RdBu_r +-3 scale as the static figure, so the
+folder). Cell colors are precomputed with the same RdBu_r +-3 scale as the static figures, so the
 interactive and printed heatmaps match exactly.
 
 Carrying every frame of every well is not shippable (~330 MB of JPEG, ~440 MB base64), so the
@@ -15,12 +22,13 @@ timelapse pack holds a few representative replicates per mutant at every frame �
 biomass is closest to the mutant's median peak. Regenerate it at a different trade-off with
 `v2/reimaging/umap/exportTimelapsePack.py --reps N --px P --quality Q`.
 
-Reads:  data/fullAtlas_pcaLinkage_{linkage.npy, cluster_order.csv},
-        data/fullAtlas_peakBiomass_featureMatrix.csv, timelapse thumbnail pack (config.input)
+Reads:  data/{fullAtlas,functionalSubset}_{pcaLinkage_linkage.npy, pcaLinkage_cluster_order.csv,
+        peakBiomass_featureMatrix.csv, frameMatrices.npz}, timelapse thumbnail pack (config.input)
 Writes: figures/interactivePlot3_dendrogramTimelapse.html
 
 Usage:  python build/IP3_interactiveDendrogramTimelapse.py
 """
+import re
 import sys
 import json
 import base64
@@ -34,18 +42,45 @@ from scipy.cluster.hierarchy import dendrogram
 from figlib import config, plotting
 
 VMIN, VMAX = -3, 3
+
+# ── feature axis labels: the SAME names Fig. 3D and Fig. S6A print ─────────────
+# Both static panels carry an identical prettyFeatureName(); this is that map with the mathtext
+# spelled as unicode, since the page has no mathtext renderer. Raw column names are kept for the
+# feature-group brackets -- only the drawn labels are prettified.
+canonicalHaralickOrder = ['energy', 'contrast', 'correlation', 'variance', 'inverse_difference_moment',
+                          'sum_average', 'sum_variance', 'sum_entropy', 'entropy',
+                          'difference_variance', 'difference_entropy', 'imc1', 'imc2']
+haralickPretty = {'energy': 'Energy', 'contrast': 'Contrast', 'correlation': 'Correlation', 'variance': 'Variance',
+                  'inverse_difference_moment': 'Inv Diff Moment', 'sum_average': 'Sum Average', 'sum_variance': 'Sum Variance',
+                  'sum_entropy': 'Sum Entropy', 'entropy': 'Entropy', 'difference_variance': 'Diff Variance',
+                  'difference_entropy': 'Diff Entropy', 'imc1': 'IMC 1', 'imc2': 'IMC 2'}
+prettyMap = {'biomass': 'Biofilm Biomass (a.u.)', 'nColonies': 'Colonies (count)', 'colony_area_um2_mean': 'Area (µm²)',
+             'colony_area_um2_std': 'Area Variability (µm²)', 'colony_bgCV': 'Intensity Variability (CV)',
+             'colony_centroidOffset_um_mean': 'Radial Offset (µm)', 'colony_eccentricity_mean': 'Eccentricity',
+             'colony_majorAxisLength_um_mean': 'Major Axis Length (µm)', 'colony_meanIntensity_mean': 'Intensity (a.u.)',
+             'colony_meanIntensity_kurtosis': 'Intensity Kurtosis', 'colony_mstEdgeMax_um_mean': 'Max Distance (µm)',
+             'colony_nnDistance1_um_mean': 'Nearest Neighbor (µm)', 'colony_nnDistance1_um_std': 'NN Variability (µm)'}
+
+
+def prettyFeatureName(base):
+    if base in prettyMap:
+        return prettyMap[base]
+    if base.startswith('whole_entropy'):
+        return 'Global Entropy'
+    if base.startswith('whole_haralick_'):
+        key = re.sub(r'_(mean|std|var)$', '', base.replace('whole_haralick_', ''))
+        if key.isdigit() and int(key) < len(canonicalHaralickOrder):
+            key = canonicalHaralickOrder[int(key)]
+        return haralickPretty.get(key, key)
+    return base
+
+
+# key -> (button label, what the view is). Full atlas first: it opens on load, as the old build did.
+VIEWS = {
+    'fullAtlas': ('Full atlas', 'all clustered mutants (Fig. S6A)'),
+    'functionalSubset': ('Functional annotations', 'the six curated pathways + WT (Fig. 3D)'),
+}
 outHtml = config.ensure(config.FIGURES / 'interactivePlot3_dendrogramTimelapse.html')
-
-# ── clustering + heatmap, exactly as the static panel ─────────────────────────
-order = pd.read_csv(config.TABLES / 'fullAtlas_pcaLinkage_cluster_order.csv')
-linkage = np.load(config.TABLES / 'fullAtlas_pcaLinkage_linkage.npy')
-fm = pd.read_csv(config.TABLES / 'fullAtlas_peakBiomass_featureMatrix.csv').rename(
-    columns={'Unnamed: 0': 'feature'}).set_index('feature')
-
-featureNames = list(fm.index)
-# heatmap columns are keyed by `mutant` (the gene name where one exists, else the locus), which is
-# also the leaf label -- NOT by `gene`, which is the locus and only matches for named genes
-mat = fm[list(order['mutant'])].to_numpy(dtype=float).T    # -> mutants (leaf order) x features
 
 cmap = mpl.colormaps['RdBu_r']
 # 255 color steps over [-3, 3] plus a reserved index 255 for "no data" (colony features before t5).
@@ -61,27 +96,50 @@ def encodeFrame(m):
     return base64.b64encode(idx.tobytes()).decode()
 
 
-# frames 0-30 from step 0, then the Fig. S6A peak-biomass matrix as the final slider position
-npz = np.load(config.TABLES / 'fullAtlas_frameMatrices.npz', allow_pickle=False)
-frameMats = npz['matrices'].astype(np.float32)
-framesData = {str(int(t)): encodeFrame(frameMats[i]) for i, t in enumerate(npz['frames'])}
-framesData['peak'] = encodeFrame(mat)
-frameKeys = [str(int(t)) for t in npz['frames']] + ['peak']
-frameLabels = [f'{int(t)} h' for t in npz['frames']] + ['Peak biomass']
+# ── clustering + heatmap for each view, exactly as the matching static panel ───
+views = {}
+for key in VIEWS:
+    order = pd.read_csv(config.TABLES / f'{key}_pcaLinkage_cluster_order.csv')
+    linkage = np.load(config.TABLES / f'{key}_pcaLinkage_linkage.npy')
+    fm = pd.read_csv(config.TABLES / f'{key}_peakBiomass_featureMatrix.csv').rename(
+        columns={'Unnamed: 0': 'feature'}).set_index('feature')
+    # heatmap columns are keyed by `mutant` (the gene name where one exists, else the locus), which
+    # is also the leaf label -- NOT by `gene`, which is the locus and only matches for named genes
+    mat = fm[list(order['mutant'])].to_numpy(dtype=float).T   # -> mutants (leaf order) x features
 
-# dendrogram geometry, computed here so the page needs no clustering code
-dd = dendrogram(linkage, no_plot=True, no_labels=True)
-dmax = max((max(d) for d in dd['dcoord']), default=1.0) or 1.0
-segments = [{'i': [x / 10.0 - 0.5 for x in ic], 'd': [y / dmax for y in dc]}
-            for ic, dc in zip(dd['icoord'], dd['dcoord'])]
+    # dendrogram geometry, computed here so the page needs no clustering code
+    dd = dendrogram(linkage, no_plot=True, no_labels=True)
+    dmax = max((max(d) for d in dd['dcoord']), default=1.0) or 1.0
+    segments = [{'i': [x / 10.0 - 0.5 for x in ic], 'd': [y / dmax for y in dc]}
+                for ic, dc in zip(dd['icoord'], dd['dcoord'])]
+
+    # frames 0-30 from step 0, then the static panel's peak-biomass matrix as the last slider stop
+    npz = np.load(config.TABLES / f'{key}_frameMatrices.npz', allow_pickle=False)
+    frameMats = npz['matrices'].astype(np.float32)
+    if list(npz['mutants']) != list(order['mutant']):
+        raise SystemExit(f'{key}: frameMatrices leaf order does not match cluster_order — rerun '
+                         'build/0_buildFrameMatrices.py')
+    framesData = {str(int(t)): encodeFrame(frameMats[i]) for i, t in enumerate(npz['frames'])}
+    framesData['peak'] = encodeFrame(mat)
+    views[key] = {'order': order, 'features': list(fm.index), 'segments': segments,
+                  'framesData': framesData,
+                  'frameKeys': [str(int(t)) for t in npz['frames']] + ['peak'],
+                  'frameLabels': [f'{int(t)} h' for t in npz['frames']] + ['Peak biomass']}
+
+# one heatmap x axis, one time slider: both views must agree on features and timepoints
+base = views['fullAtlas']
+for key, v in views.items():
+    if v['features'] != base['features'] or v['frameKeys'] != base['frameKeys']:
+        raise SystemExit(f'{key}: feature set / timepoints differ from fullAtlas')
+featureNames = base['features']
 
 # ── replicate thumbnails (every frame of a few representative wells), grouped under their mutant ──
 thumbList, byMutant, missing = [], {}, 0
 packDir = Path(config.input('reimaging/thumbnailsTimelapse/'))
 man = pd.read_csv(packDir / 'manifest.csv')
 # the pack is built from the wide table, which carries more mutants than survive the manifold
-# filters; inlining images for leaves the dendrogram does not show is pure dead payload
-leaves = set(order['mutant'].astype(str))
+# filters; inlining images for leaves no view shows is pure dead payload
+leaves = set().union(*(set(v['order']['mutant'].astype(str)) for v in views.values()))
 man = man[man['mutant'].astype(str).isin(leaves)]
 for mutant, grp in man.groupby('mutant'):
     idxs = []
@@ -103,15 +161,20 @@ for mutant, grp in man.groupby('mutant'):
                      'fr': {str(k): v for k, v in byFrame.items()}})
     byMutant[str(mutant)] = idxs
 
-rows = []
-for i, r in order.iterrows():
-    m = str(r['mutant'])
-    reps = byMutant.get(m, [])
-    rows.append({'mutant': m, 'display': str(r['display']), 'locus': str(r['gene']),
-                 'anno': str(r['annotation']), 'color': str(r['color']),
-                 'pf': int(r['peakFrame']), 'n': len(reps), 'reps': reps})
-print(f'{len(rows)} mutants, {len(thumbList)} replicate thumbnails inlined ({missing} missing); '
-      f'heatmap {mat.shape[0]}x{mat.shape[1]}')
+sets = {}
+for key, v in views.items():
+    rows = []
+    for _, r in v['order'].iterrows():
+        m = str(r['mutant'])
+        reps = byMutant.get(m, [])
+        rows.append({'mutant': m, 'display': str(r['display']), 'locus': str(r['gene']),
+                     'anno': str(r['annotation']), 'color': str(r['color']),
+                     'pf': int(r['peakFrame']), 'n': len(reps), 'reps': reps})
+    sets[key] = {'label': VIEWS[key][0], 'blurb': VIEWS[key][1], 'rows': rows,
+                 'segments': v['segments'], 'framesData': v['framesData']}
+    print(f'{VIEWS[key][0]}: {len(rows)} mutants, heatmap {len(rows)}x{len(featureNames)}')
+print(f'{len(thumbList)} replicate thumbnails inlined ({missing} missing)')
+
 
 # feature-group brackets, matching the static figure's grouping
 def groupOf(f):
@@ -127,9 +190,10 @@ for i, f in enumerate(featureNames):
         start = i
 groups.append({'name': groupOf(featureNames[-1]), 'a': start, 'b': len(featureNames)})
 
-payload = {'rows': rows, 'features': featureNames, 'segments': segments, 'groups': groups,
-           'palette': PALETTE, 'framesData': framesData, 'frameKeys': frameKeys,
-           'frameLabels': frameLabels, 'vmin': VMIN, 'vmax': VMAX}
+payload = {'sets': sets, 'setKeys': list(VIEWS), 'features': featureNames,
+           'featureLabels': [prettyFeatureName(f) for f in featureNames], 'groups': groups,
+           'palette': PALETTE, 'frameKeys': base['frameKeys'], 'frameLabels': base['frameLabels'],
+           'vmin': VMIN, 'vmax': VMAX}
 dataJson = json.dumps(payload)
 thumbsJson = json.dumps(thumbList)
 legendJson = json.dumps({**plotting.FUNCTION_COLORS, 'WT': '#000000'})
@@ -142,10 +206,13 @@ html = f"""<!DOCTYPE html>
   body {{ font-family:'Gillius ADF','Helvetica Neue',Arial,sans-serif; background:#1a1a2e; color:#eee; display:flex; flex-direction:column; height:100vh; }}
   #controls {{ display:flex; align-items:center; gap:16px; padding:12px 20px; background:#16213e; border-bottom:1px solid #334; flex-shrink:0; flex-wrap:wrap; }}
   #controls label {{ font-size:15px; color:#99a; }}
-  #search {{ background:#2a2a4a; border:1px solid #445; border-radius:5px; color:#eee; font-size:15px; padding:6px 12px; width:260px; outline:none; }}
+  #search {{ background:#2a2a4a; border:1px solid #445; border-radius:5px; color:#eee; font-size:15px; padding:6px 12px; width:230px; outline:none; }}
   #search::placeholder {{ color:#667; }}
   .btn {{ background:#2a2a4a; border:1px solid #445; border-radius:5px; color:#ccc; padding:6px 14px; font-size:14px; cursor:pointer; }}
   .btn:hover {{ background:#3a3a5a; }}
+  .set-btn {{ background:#2a2a4a; border:1px solid #445; border-radius:5px; color:#ccc; padding:6px 14px; font-size:14px; cursor:pointer; margin-right:4px; }}
+  .set-btn.active {{ background:#4a6fa5; border-color:#6a9fd5; color:#fff; }}
+  #setcount {{ font-size:13px; color:#889; }}
   input[type=range] {{ width:170px; accent-color:#4a6fa5; cursor:pointer; }}
   #fslider {{ width:90px; }}
   .ro {{ font-size:14px; color:#ccd; min-width:74px; display:inline-block; }}
@@ -174,6 +241,7 @@ html = f"""<!DOCTYPE html>
   #empty {{ color:#667; font-size:14px; padding:20px; }}
 </style></head><body>
 <div id="controls">
+  <div><label>View</label> <span id="set-btns"></span><span id="setcount"></span></div>
   <button class="btn" id="play">&#9654; Play</button>
   <label>Time</label><input id="tslider" type="range" min="0" step="1" />
   <span id="tlabel" class="ro"></span>
@@ -199,7 +267,7 @@ html = f"""<!DOCTYPE html>
 const D = {dataJson};
 const THUMBS = {thumbsJson};
 const FUNC = {legendJson};
-const ROWS = D.rows.length, NF = D.features.length;
+const SET_KEYS = D.setKeys, NF = D.features.length;
 const ROW_H = 15, CELL_W = 26, DEND_W = 210, STRIP_W = 14, LAB_W = 150;
 const HEAT_X = DEND_W + STRIP_W + 6;
 
@@ -209,16 +277,24 @@ const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
 // names ("Nearest-Neighbor Distance Variability") and let them collide with the cells.
 const FEAT_FONT = '10px sans-serif';
 ctx.font = FEAT_FONT;
-const FEAT_RISE = Math.ceil(Math.max(...D.features.map(f => ctx.measureText(f).width)) * Math.SQRT1_2);
+// drawn labels are the printed panels' display names (D.featureLabels); D.features keeps the raw
+// column names, which is what the group brackets are derived from
+const FEAT_LAB = D.featureLabels;
+const FEAT_RISE = Math.ceil(Math.max(...FEAT_LAB.map(f => ctx.measureText(f).width)) * Math.SQRT1_2);
 const TOP_H = FEAT_RISE + 46;   // + room for the group brackets, which sit between labels and cells
 const BOT_H = FEAT_RISE + 20;
 const WORLD_W = HEAT_X + NF * CELL_W + 8 + Math.max(LAB_W, FEAT_RISE + 20);
-const WORLD_H = TOP_H + ROWS * ROW_H + BOT_H;
 const tip = document.getElementById('tooltip'), sb = document.getElementById('sidebar');
 const gallery = document.getElementById('gallery'), sbHead = document.getElementById('sb-head');
 let dpr = window.devicePixelRatio || 1, W, H, scale = 1, ox = 0, oy = 0, hover = -1, hits = null;
 
-// ── timepoints: one byte per cell, decoded once ───────────────────────────────
+// ── the two views: same features, same timepoints, different leaves ───────────
+// Cells are z-scored across the whole atlas in both, so switching re-clusters and re-orders the
+// rows without changing any mutant's colors.
+let curSet = SET_KEYS[0], S = D.sets[curSet], ROWS = S.rows.length;
+let WORLD_H = TOP_H + ROWS * ROW_H + BOT_H;
+
+// ── timepoints: one byte per cell, decoded once per view ──────────────────────
 const PAL = D.palette, KEYS = D.frameKeys, LABELS = D.frameLabels;
 function decode(b64) {{
   const s = atob(b64), a = new Uint8Array(s.length);
@@ -226,9 +302,12 @@ function decode(b64) {{
   return a;
 }}
 const CELLS = {{}};
-for (const k of KEYS) CELLS[k] = decode(D.framesData[k]);
+for (const sk of SET_KEYS) {{
+  CELLS[sk] = {{}};
+  for (const k of KEYS) CELLS[sk][k] = decode(D.sets[sk].framesData[k]);
+}}
 let curIdx = KEYS.length - 1;          // opens on the peak-biomass frame, matching the static figure
-let playing = false, timer = null, fps = 8;
+let playing = false, timer = null, fps = 8, query = '';
 const tsl = document.getElementById('tslider'), fsl = document.getElementById('fslider');
 const tlab = document.getElementById('tlabel'), flab = document.getElementById('flabel');
 const playBtn = document.getElementById('play');
@@ -250,6 +329,34 @@ document.addEventListener('keydown', e => {{
   if (e.key === ' ') {{ e.preventDefault(); playing ? stop() : start(); }}
 }});
 
+// ── view switch ───────────────────────────────────────────────────────────────
+function buildSetButtons() {{
+  const c = document.getElementById('set-btns');
+  for (const sk of SET_KEYS) {{
+    const b = document.createElement('button');
+    b.className = 'set-btn' + (sk === curSet ? ' active' : '');
+    b.dataset.set = sk; b.textContent = D.sets[sk].label; b.title = D.sets[sk].blurb;
+    b.onclick = () => setSet(sk);
+    c.appendChild(b);
+  }}
+}}
+function setSet(sk) {{
+  if (sk === curSet) return;
+  const openName = curMutant >= 0 ? S.rows[curMutant].mutant : null;
+  curSet = sk; S = D.sets[sk]; ROWS = S.rows.length;
+  WORLD_H = TOP_H + ROWS * ROW_H + BOT_H;
+  hover = -1;
+  document.querySelectorAll('#set-btns .set-btn').forEach(b => b.classList.toggle('active', b.dataset.set === sk));
+  document.getElementById('setcount').textContent = ROWS + ' mutants';
+  applySearch();
+  // keep the gallery on the same genotype where the new view still shows it
+  if (openName !== null) {{
+    const i = S.rows.findIndex(r => r.mutant === openName);
+    i >= 0 ? openMutant(i) : closeSidebar();
+  }}
+  fit(); draw();
+}}
+
 function fit() {{
   const s = Math.min(W / WORLD_W, H / WORLD_H);
   scale = s; ox = (W - WORLD_W * s) / 2; oy = 10;
@@ -264,7 +371,7 @@ function draw() {{
 
   // dendrogram: root at left, leaves at right
   ctx.strokeStyle = '#8fa'; ctx.lineWidth = 1 / scale * 1.2; ctx.globalAlpha = 0.75;
-  for (const s of D.segments) {{
+  for (const s of S.segments) {{
     ctx.beginPath();
     for (let k = 0; k < 4; k++) {{
       const X = DEND_W - s.d[k] * (DEND_W - 6);
@@ -291,18 +398,19 @@ function draw() {{
   for (let j = 0; j < NF; j++) {{
     const cx = HEAT_X + j * CELL_W + CELL_W / 2;
     ctx.save(); ctx.translate(cx, TOP_H - 26); ctx.rotate(-Math.PI / 4);
-    ctx.textAlign = 'left'; ctx.fillText(D.features[j], 0, 0); ctx.restore();
+    ctx.textAlign = 'left'; ctx.fillText(FEAT_LAB[j], 0, 0); ctx.restore();
     ctx.save(); ctx.translate(cx, botY); ctx.rotate(-Math.PI / 4);
-    ctx.textAlign = 'right'; ctx.fillText(D.features[j], 0, 0); ctx.restore();
+    ctx.textAlign = 'right'; ctx.fillText(FEAT_LAB[j], 0, 0); ctx.restore();
   }}
 
   // annotation strip + heatmap + labels
+  const buf = CELLS[curSet][KEYS[curIdx]];
   for (let i = 0; i < ROWS; i++) {{
-    const y = TOP_H + i * ROW_H, r = D.rows[i];
+    const y = TOP_H + i * ROW_H, r = S.rows[i];
     const dim = hits && !hits.has(i) ? 0.25 : 1;
     ctx.globalAlpha = dim;
     ctx.fillStyle = r.color; ctx.fillRect(DEND_W + 2, y, STRIP_W, ROW_H - 1);
-    const buf = CELLS[KEYS[curIdx]], base = i * NF;
+    const base = i * NF;
     for (let j = 0; j < NF; j++) {{ ctx.fillStyle = PAL[buf[base + j]]; ctx.fillRect(HEAT_X + j * CELL_W, y, CELL_W, ROW_H - 1); }}
     ctx.fillStyle = i === hover ? '#fff' : '#ccd'; ctx.textAlign = 'left';
     ctx.font = `${{i === hover ? 'bold ' : ''}}italic 11px sans-serif`;
@@ -331,7 +439,7 @@ function frameNumber() {{
 }}
 function refreshGallery() {{
   if (curMutant < 0) return;
-  const reps = D.rows[curMutant].reps, fn = frameNumber();
+  const reps = S.rows[curMutant].reps, fn = frameNumber();
   gallery.querySelectorAll('.cell').forEach((cell, k) => {{
     const v = reps[k]; if (!v || !v.fr) return;
     const t = fn === null ? v.pf : fn;
@@ -343,7 +451,7 @@ function refreshGallery() {{
 }}
 function openMutant(i) {{
   curMutant = i;
-  const r = D.rows[i], fn = frameNumber();
+  const r = S.rows[i], fn = frameNumber();
   sb.classList.remove('hidden');
   sbHead.innerHTML = `<div class="g">${{r.display}}</div><div class="l">${{r.locus}}</div>` +
     `<div class="a">${{r.anno}}</div>` +
@@ -358,16 +466,17 @@ function openMutant(i) {{
     : '<div id="empty">No replicate images available</div>';
   resize();
 }}
-document.getElementById('sb-close').addEventListener('click', () => {{
+function closeSidebar() {{
   sb.classList.add('hidden'); gallery.innerHTML = ''; curMutant = -1; resize();
-}});
+}}
+document.getElementById('sb-close').addEventListener('click', closeSidebar);
 cv.addEventListener('mousemove', e => {{
   const b = cv.getBoundingClientRect(), sx = e.clientX - b.left, sy = e.clientY - b.top;
   if (panning) {{ ox += e.clientX - px; oy += e.clientY - py; px = e.clientX; py = e.clientY; draw(); return; }}
   const i = rowAt(sx, sy);
   if (i !== hover) {{ hover = i; draw(); }}
   if (i >= 0) {{
-    const r = D.rows[i];
+    const r = S.rows[i];
     tip.innerHTML = `<div class="g">${{r.display}}</div><div>${{r.locus}} · ${{r.anno}}</div>` +
                     `<div style="color:#889">${{r.n}} replicates · click to view images</div>`;
     tip.style.display = 'block';
@@ -401,16 +510,17 @@ cv.addEventListener('wheel', e => {{
 }}, {{ passive: false }});
 cv.addEventListener('dblclick', () => {{ fit(); draw(); }});
 document.getElementById('fit').addEventListener('click', () => {{ fit(); draw(); }});
-document.getElementById('search').addEventListener('input', e => {{
-  const q = e.target.value.trim().toLowerCase();
-  if (!q) {{ hits = null; document.getElementById('hits').textContent = ''; draw(); return; }}
+function applySearch() {{
+  if (!query) {{ hits = null; document.getElementById('hits').textContent = ''; return; }}
   hits = new Set();
-  D.rows.forEach((r, i) => {{
-    if (r.mutant.toLowerCase().includes(q) || r.locus.toLowerCase().includes(q) ||
-        r.anno.toLowerCase().includes(q)) hits.add(i);
+  S.rows.forEach((r, i) => {{
+    if (r.mutant.toLowerCase().includes(query) || r.locus.toLowerCase().includes(query) ||
+        r.anno.toLowerCase().includes(query)) hits.add(i);
   }});
   document.getElementById('hits').textContent = hits.size + ' hits';
-  draw();
+}}
+document.getElementById('search').addEventListener('input', e => {{
+  query = e.target.value.trim().toLowerCase(); applySearch(); draw();
 }});
 function resize() {{
   const b = cv.parentElement.getBoundingClientRect(); W = b.width; H = b.height;
@@ -420,6 +530,8 @@ function resize() {{
   draw();
 }}
 window.addEventListener('resize', resize);
+buildSetButtons();
+document.getElementById('setcount').textContent = ROWS + ' mutants';
 setFrame(curIdx); resize(); fit(); draw();
 </script></body></html>
 """

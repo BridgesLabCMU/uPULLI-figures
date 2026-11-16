@@ -74,6 +74,34 @@ each class boundary. figS4's build parses the same table for its trajectory pane
 duplication, so neither package reaches into the other's `data/`. 3A writes its legend as a **separate**
 pair of files (`3A_rankedTransposonBiomass_legend.{png,svg}`).
 
+**Not a panel: the 3-D view.** `build/reimagingUmap3d.py` + `render/reimagingUmap3d.py` are an
+exploratory three-dimensional version of the landscape — the Fig 3B recipe with `n_components=3`.
+They live alongside the panel scripts rather than in `archive/` because nothing has retired them, but
+no manuscript panel uses them. Spelled `...3d...` in lower case and with no panel letter so they are
+never mistaken for **Panel 3D** (the dendrogram + heatmap). The render takes
+`--color {function,biomass}` — the Fig 3B coloring or the retired-3A biomass coloring, both off the
+one table — plus `--elev/--azim`, and `--grid` for four azimuths in one figure, which is the readable
+option on paper:
+
+```bash
+python render/reimagingUmap3d.py --color function          # -> figures/reimagingUmap3d_function_e22a-60.{png,svg}
+python render/reimagingUmap3d.py --color biomass
+python render/reimagingUmap3d.py --color function --grid   # four azimuths, one figure
+python render/reimagingUmap3d_interactive.py               # -> figures/reimagingUmap3d_interactive.html
+```
+
+`reimagingUmap3d_interactive.py` writes the rotatable version of the same table: one self-contained
+HTML file (0.19 MB, no CDN, no sibling assets — it opens offline by double-clicking), drawn on a plain
+canvas with the 3,669 points depth-sorted every frame, so no WebGL and no library. Drag rotates,
+shift-drag pans, scroll zooms, space spins, double-click resets, hover identifies a replicate
+(mutant, locus, plate/well, peak biomass, annotation). Both colorings live in the one file and switch
+in the toolbar; the legend chips toggle functional groups, and the biomass ramp is matplotlib's own
+`plasma` at the panel's 2nd–98th-percentile limits, so the page and the PNG agree. It opens on the
+static default viewpoint (elev 22°, azim −60°).
+
+Unlike `interactive/`'s Plots 1–6, this one is **not** a numbered supplement and is not tracked —
+`fig*/figures/` is gitignored, so regenerate it from the bundled table whenever it is wanted.
+
 
 | Panel | `render/` script | `data/` table(s) | `build/` script |
 |---|---|---|---|
@@ -118,6 +146,19 @@ Coloring in the figure: grey = unclassified; six functional-group colors (see be
 | plateId, wellId, mutant, geneLocus, function, umap1, umap2 | as above |
 | **peakBiomass** | max biofilm biomass over the timecourse for that well (a.u.) |
 | **peakBiomassNorm** | `peakBiomass` ÷ (mean WT peak biomass) — the value mapped to the plasma colormap (2nd–98th pct range) |
+
+### `reimagingLandscape3d_nn10_md0.10_coords.csv`: the three-dimensional view (3669 rows)
+| column | meaning |
+|---|---|
+| plateId, wellId, mutant, geneLocus, function | identifiers (above) |
+| n_neighbors, min_dist | UMAP params (10, 0.1) — constant, kept for provenance |
+| **umap1, umap2, umap3** | replicate coordinates from a **separate** `n_components=3` fit |
+| peakBiomass, peakBiomassNorm | as in the biomass overlay above, so one table serves both colorings |
+
+⚠️ **`umap1`/`umap2` here are NOT the 2-D landscape's coordinates.** UMAP does not nest: a 3-component
+fit is its own embedding, not the 2-component one with a third axis added, so this table and
+`reimagingLandscape_nn10_md0.10_coords.csv` do not superimpose. Same rows, same filters, same
+hyperparameters and `random_state` — different manifold.
 
 ### `centroidsByFunction_nn10_md0.10_centroids.csv`: per-mutant centroids (158 rows, one per mutant)
 | column | meaning |

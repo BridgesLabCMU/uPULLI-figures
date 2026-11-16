@@ -8,8 +8,10 @@ double-clicking, with no server and no sibling asset folder):
   1  UMAP of the atlas from the quantitative uPULLI-I features; click a replicate -> its peak
      biofilm biomass image,
   2  the same explorer over the PCA-50 DINOv2 CLS embedding manifold (uPULLI-DL),
-  3  dendrogram + heatmap of the atlas; click a mutant -> the peak-biomass image of every one of
-     its replicates,
+  1T/2T  alternates of 1 and 2 (--timelapse) in which a representative replicate plays its whole
+     timecourse instead of showing one still,
+  3  dendrogram + heatmap of the atlas, switchable between the full 158-mutant atlas (Fig. S6A) and
+     the 50-leaf functional-annotation subset (Fig. 3D); click a mutant -> its replicates' images,
   4-6  RNA-seq volcano explorers for the three clean deletions (bioD, pdhE2, manA vs WT), with
      pathway highlighting, gene search and per-gene tooltips.
 

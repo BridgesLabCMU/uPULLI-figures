@@ -1,4 +1,4 @@
-,WT + DMSO,$\mathit{bioD}$ transposon,$\Delta\mathit{bioD}$,100 $\mu$M MAC137,$\Delta\mathit{bioD}$ + 100 $\mu$M biotin
+,WT + DMSO,$\mathit{bioD}$ transposon,$\Delta\mathit{bioD}$,100 $\mu$M MAC13772,$\Delta\mathit{bioD}$ + 200 $\mu$M biotin
 biomass,0.0,0.5755300432309391,0.5457545585183768,0.6481386259211156,-0.07482929972553012
 colony_area_um2_mean,0.0,0.49269948987002515,0.19993433667891372,0.5709744429533548,-0.3710988830031537
 colony_area_um2_std,0.0,0.40680636362751105,0.29199384930134203,0.6745351371164836,-0.35552518584501414

@@ -40,6 +40,7 @@ through `config.input("<logical name>")`. No script contains an absolute path.
 | `reimaging/master_frame_features.csv` | 223 MB | fig3 | Reimaging atlas: per-(plate, well, frame) features. |
 | `reimaging/reimagingResults_10x.csv` | 22 MB | figS4 | Reimaging analysis of record: set membership + phenotype per mutant. |
 | `reimaging/thumbnails112/` | 12 MB | interactive | Peak-biofilm-biomass thumbnail pack: one 112px grayscale JPEG per reimaging well, keyed `<plate-well>_t<peakFrame>.jpg`, plus manifest.csv. Inlined as base64 by the interactive plots. |
+| `reimaging/thumbnailsTimelapse/` | 25 MB | interactive | Timelapse thumbnail pack: every frame for 3 representative wells per mutant, 96px grayscale JPEG, keyed `<plate-well>_t<frame>.jpg`, plus manifest.csv. Drives Interactive Plot 3 and the `--timelapse` builds of Plots 1/2. |
 | `reimaging/umapEmbeddings.parquet` | 0 MB | fig3 | Reimaging UMAP coordinates over the (n_neighbors, min_dist) grid. |
 | `rnaseq/` | — | fig4 | Directory of per-strain differential-expression tables (<strain>_allGenes.csv) for the Fig 4E biofilm-gene heatmap. Sequencing data are deposited separately under their own accession. |
 | `training/embeddings/cls.npy` | 155 MB | fig1 | DINOv2 CLS embeddings for the training set, [nWells, 31, 768] float32. |
