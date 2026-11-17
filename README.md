@@ -13,6 +13,7 @@ paper-figures/
   inputs.json          manifest of build-layer inputs (logical name → size, SHA-256, figures)
   INPUTS.md            that manifest as a table, plus how to get the inputs
   fetch_data.py        download the build inputs from the data deposit
+  reproduce/           deposit_to_cytation.py: deposited raw stacks → µPULLI-I input (see Reproducing the paper)
   requirements.txt  environment.yml  LICENSE (MIT)  .gitignore
   fig1/ … fig5/  figS1/ … figS8/     one package per figure:
     figlib.py            thin shim — declares this figure's build inputs, re-exports figlib_shared
@@ -96,6 +97,100 @@ together); the six full-atlas dendrogram heatmaps (Fig. 3D, S6A ×2, S7A ×2, S7
 and account for the rest.
 Figures assume the **Gillius ADF** font (matplotlib falls back silently if it is missing; the data and
 coordinates are unaffected).
+
+## Reproducing the paper
+
+The paper's numbers come from three stages. Each can be rerun from public material, and each was
+checked against the published results:
+
+| Stage | Tool | Check |
+|---|---|---|
+| A. Raw images → per-frame features | [µPULLI-I](https://github.com/BridgesLabCMU/uPULLI-I) | Two wells each from the training, screen, reimaging, *K. pneumoniae* and multispecies (10×) sets, reprocessed with the commands below (the screen and reimaging wells starting from the deposited raw stacks): all 191 features **identical** to the deposited tables |
+| B. Processed images → DINOv2 embeddings | [µPULLI-DL](https://github.com/BridgesLabCMU/uPULLI-DL) | Reimaging wells re-embedded: every frame's vector matches the deposited one to within 4 × 10⁻⁶ (relative), cosine similarity 1.0000000; the residual is floating-point difference between PyTorch versions |
+| C. Features and embeddings → tables → figures | this repository | Training and reimaging wide tables rebuilt **identical**; figure tables rebuilt **byte-identical** (Fig. S8 tested end to end) |
+
+The paper's data were processed with development builds of µPULLI-I (0.5.0 and 1.0.0). Use the current
+release: it gives identical features on the same images. For exact numerics, install µPULLI-I from its
+pinned `environment.yml` (Python 3.9.23).
+
+### A. Raw images → features (µPULLI-I)
+
+The raw brightfield timelapses are in the BioImage Archive entry
+[`S-BIAD3830`](https://doi.org/10.6019/S-BIAD3830) under `raw-images/`, one OME-TIFF stack per well.
+µPULLI-I reads per-frame Cytation 5 files instead, so convert first. `reproduce/deposit_to_cytation.py`
+writes every frame with its original pixel values and the pixel size from the deposit. It needs only
+numpy and tifffile; run it in the µPULLI-I environment.
+
+```bash
+# 1. Convert the plates of one dataset (example: the transposon reimaging set)
+python reproduce/deposit_to_cytation.py <deposit>/raw-images/Vcholerae/transposonReimaging \
+    --out raw_frames/reimaging --mag _02
+
+# 2. Process them: the flags common to every dataset, plus that dataset's row from the table below
+biofilm-processing-run --plates raw_frames/reimaging/* --output-dir features/reimaging --mag _02 \
+    --block-diam 101 --fft-stride 1 --shift-thresh 250 \
+    --fixed-thresh 0.025 --downsample 1 --min-colony-area 200 --prop-radius 50 \
+    --whole-image --colony-tracking --colony-feats --workers 8
+```
+
+The run writes `features/<dataset>/master_frame_features.csv`, the table deposited on KiltHub.
+
+| Dataset | Deposit folder (`raw-images/…`) | `--mag` | `--fixed-thresh` | `--downsample` | `--min-colony-area` | `--prop-radius` | Deposited output | Figures |
+|---|---|---|---|---|---|---|---|---|
+| Training set (8 strains) | `Vcholerae/knownMutant` | `_03` | 0.025 | 1 | 200 | 50 | `training/master_frame_features.csv` | 1, 2, S1–S5 |
+| Genome-wide transposon screen | `Vcholerae/transposonScreen` | `_03` | 0.025 | 1 | 200 | 50 | `transposons/master_frame_features.csv` | S4, S5, Data S1 |
+| Transposon reimaging | `Vcholerae/transposonReimaging` | `_02` | 0.025 | 1 | 200 | 50 | `reimaging/master_frame_features.csv` | 3, 4, 5, S4, S6, S7, Interactive 1–3 |
+| Clean deletions, compounds | `Vcholerae/cleanDeletion`, `Vcholerae/compound` | `_02` | 0.025 | 1 | 200 | 50 | input to `cluster/*` (see "Deposited as is") | 4, 5A |
+| *K. pneumoniae* mutants | `Kpneumoniae` | `_02` | 0.04 | 4 | 200 | 25 | `kleb/master_frame_features.csv` | 5B |
+| Multispecies panel, 10× | `Multispecies` | `_04` | 0.03 | 4 | 400 | 25 | input to stage B | 5C |
+
+The multispecies deposit is filed by species. Point the converter at the whole `Multispecies` folder and
+it reassembles each plate. Processing takes about 5 minutes per 10× well (1992 × 1992 px, 31 frames)
+per worker and about 3 GB of RAM per worker; the sets run with `--downsample 4` are faster.
+
+### B. Processed images → embeddings (µPULLI-DL)
+
+Run µPULLI-DL on each stage-A output folder. Its defaults are the paper's settings: `facebook/dinov2-base`
+(ViT-B/14), 518 px input, 3 × 3 patch grid.
+
+```bash
+biofilm-embeddings-run features/training          # likewise features/reimaging and features/kleb
+biofilm-embeddings-run features/cluster --n-frames 31
+biofilm-embeddings-run features/multispecies --mag _04 --n-frames 24 --cache-dir features/multispecies/10X
+```
+
+Each run writes `embeddings/cls_cache.pt`. The deposited arrays are a format conversion of that cache:
+`cls.npy` is `cache['cls']` as float32 (wells × frames × 768), `patchmean.npy` is `cache['patches']`
+averaged over its 9 patch cells, and `index.csv` lists `cache['wells']` in row order. Read the cache with
+`biofilm_embeddings.embeddings.extractor.loadCache`. A GPU is strongly recommended for the full sets.
+
+### C. Features → tables → figures (this repository)
+
+Put the stage-A and stage-B outputs where the build layer expects them: under the logical names in
+[`INPUTS.md`](INPUTS.md), in `fig*/build/inputs/` or under `UPULLI_DATA_ROOT`. Alternatively run
+`python fetch_data.py` to take them from KiltHub. Then:
+
+```bash
+python fig2/build/0_buildTrainingWide.py     # training/wide.parquet    (verified identical to the deposit)
+python fig3/build/0_buildCollapsedWide.py    # reimaging/collapsedWide.parquet (verified identical)
+```
+
+Then run each figure's `build/` scripts in the order its `fig*/README.md` gives, and the `render/`
+scripts as in [Demo](#demo). Analysis choices (growth filters, replicate minimums, excluded loci,
+frame windows) are in the build scripts and documented in each `fig*/README.md`.
+
+### Deposited as is
+
+These KiltHub inputs are used as published. The code in this repository and the two tools does not
+regenerate them.
+
+| Input | What it is | Origin |
+|---|---|---|
+| `transposons/results_10x.csv`, `reimaging/reimagingResults_10x.csv` | Phenotype calls from the original screen analysis; these selected the reimaging library | Screen analysis of record |
+| `training/layout.csv`, `reimaging/geneIndex.csv` | Well → strain and well → gene/function annotations | Plate layouts and genome annotation |
+| `reimaging/umapEmbeddings.parquet`, `reimaging/embeddings/dendro*.csv`, `cluster/*_collapsedWide.parquet`, `reimaging/thumbnails*/` | UMAP grid, embedding-dendrogram inputs, clean-deletion and compound wide tables, image thumbnails | Lab analysis scripts not included in this repository |
+| `rnaseq/` | Differential-expression tables (Fig. 4E, S8B–D) | RNA-seq pipeline in the Methods; reads on NCBI SRA, BioProject `PRJNA1513060` |
+| `lux/Lum.csv`, `lux/OD.csv` | Plate-reader P*vpsL*-lux timecourse (Fig. S8E) | Raw instrument export |
 
 ## Figures
 
