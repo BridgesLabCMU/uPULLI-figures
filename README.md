@@ -105,15 +105,15 @@ checked against the published results:
 
 | Stage | Tool | Check |
 |---|---|---|
-| A. Raw images → per-frame features | [µPULLI-I](https://github.com/BridgesLabCMU/uPULLI-I) | Two wells each from the training, screen, reimaging, *K. pneumoniae* and multispecies (10×) sets, reprocessed with the commands below (the screen and reimaging wells starting from the deposited raw stacks): all 191 features **identical** to the deposited tables |
-| B. Processed images → DINOv2 embeddings | [µPULLI-DL](https://github.com/BridgesLabCMU/uPULLI-DL) | Reimaging wells re-embedded: every frame's vector matches the deposited one to within 4 × 10⁻⁶ (relative), cosine similarity 1.0000000; the residual is floating-point difference between PyTorch versions |
+| A. Raw images → processed images + per-frame features | [µPULLI-I](https://github.com/BridgesLabCMU/uPULLI-I) | Two wells each from the training, screen, reimaging, *K. pneumoniae* and multispecies (10×) sets, reprocessed with the commands below (the screen and reimaging wells starting from the deposited raw stacks): all 191 features **identical** to the deposited tables |
+| B. Processed images → DINOv2 CLS and patch embeddings | [µPULLI-DL](https://github.com/BridgesLabCMU/uPULLI-DL) | Reimaging wells re-embedded: every frame's vector matches the deposited one to within 4 × 10⁻⁶ (relative), cosine similarity 1.0000000; the residual is floating-point difference between PyTorch versions |
 | C. Features and embeddings → tables → figures | this repository | Training and reimaging wide tables rebuilt **identical**; figure tables rebuilt **byte-identical** (Fig. S8 tested end to end) |
 
 The paper's data were processed with development builds of µPULLI-I (0.5.0 and 1.0.0). Use the current
 release: it gives identical features on the same images. For exact numerics, install µPULLI-I from its
 pinned `environment.yml` (Python 3.9.23).
 
-### A. Raw images → features (µPULLI-I)
+### A. Raw images → processed images + features (µPULLI-I)
 
 The raw brightfield timelapses are in the BioImage Archive entry
 [`S-BIAD3830`](https://doi.org/10.6019/S-BIAD3830) under `raw-images/`, one OME-TIFF stack per well.
@@ -127,13 +127,16 @@ python reproduce/deposit_to_cytation.py <deposit>/raw-images/Vcholerae/transposo
     --out raw_frames/reimaging --mag _02
 
 # 2. Process them: the flags common to every dataset, plus that dataset's row from the table below
-biofilm-processing-run --plates raw_frames/reimaging/* --output-dir features/reimaging --mag _02 \
+biofilm-processing-run --plates raw_frames/reimaging/* --output-dir processed/reimaging --mag _02 \
     --block-diam 101 --fft-stride 1 --shift-thresh 250 \
     --fixed-thresh 0.025 --downsample 1 --min-colony-area 200 --prop-radius 50 \
     --whole-image --colony-tracking --colony-feats --workers 8
 ```
 
-The run writes `features/<dataset>/master_frame_features.csv`, the table deposited on KiltHub.
+Each plate's raw frames are registered, contrast-normalized and segmented into processed images
+(`processed/<dataset>/<plate>/processedImages/<well>_processed.tif`, plus masks), and features are
+computed from those. The run writes `processed/<dataset>/master_frame_features.csv`, the table
+deposited on KiltHub; the processed stacks are the input to stage B.
 
 | Dataset | Deposit folder (`raw-images/…`) | `--mag` | `--fixed-thresh` | `--downsample` | `--min-colony-area` | `--prop-radius` | Deposited output | Figures |
 |---|---|---|---|---|---|---|---|---|
@@ -150,21 +153,24 @@ per worker and about 3 GB of RAM per worker; the sets run with `--downsample 4` 
 
 ### B. Processed images → embeddings (µPULLI-DL)
 
-Run µPULLI-DL on each stage-A output folder. Its defaults are the paper's settings: `facebook/dinov2-base`
-(ViT-B/14), 518 px input, 3 × 3 patch grid.
+µPULLI-DL embeds the `_processed.tif` stacks from stage A with a frozen DINOv2 model, giving one CLS
+embedding and a 3 × 3 grid of patch embeddings per frame. Run it on each stage-A output folder. (It can
+also do stage A itself from raw images, through the same pinned µPULLI-I engine; the paper's
+embeddings were made from the stage-A outputs.) Its defaults are the paper's settings:
+`facebook/dinov2-base` (ViT-B/14), 518 px input, 3 × 3 patch grid.
 
 ```bash
-biofilm-embeddings-run features/training          # likewise features/reimaging and features/kleb
-biofilm-embeddings-run features/cluster --n-frames 31
-biofilm-embeddings-run features/multispecies --mag _04 --n-frames 24 --cache-dir features/multispecies/10X
+biofilm-embeddings-run processed/training          # likewise processed/reimaging and processed/kleb
+biofilm-embeddings-run processed/cluster --n-frames 31
+biofilm-embeddings-run processed/multispecies --mag _04 --n-frames 24 --cache-dir processed/multispecies/10X
 ```
 
 Each run writes `embeddings/cls_cache.pt`. The deposited arrays are a format conversion of that cache:
-`cls.npy` is `cache['cls']` as float32 (wells × frames × 768), `patchmean.npy` is `cache['patches']`
-averaged over its 9 patch cells, and `index.csv` lists `cache['wells']` in row order. Read the cache with
+`cls.npy` is `cache['cls']` as float32 (wells × frames × 768), `patchmean.npy` is the patch embeddings
+(`cache['patches']`) averaged over the 9 grid cells, and `index.csv` lists `cache['wells']` in row order. Read the cache with
 `biofilm_embeddings.embeddings.extractor.loadCache`. A GPU is strongly recommended for the full sets.
 
-### C. Features → tables → figures (this repository)
+### C. Features and embeddings → tables → figures (this repository)
 
 Put the stage-A and stage-B outputs where the build layer expects them: under the logical names in
 [`INPUTS.md`](INPUTS.md), in `fig*/build/inputs/` or under `UPULLI_DATA_ROOT`. Alternatively run
