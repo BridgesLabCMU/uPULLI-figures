@@ -76,7 +76,7 @@ slightly if the Gillius ADF font is not installed.
 **2. Rebuild a figure's data from the deposit, then render it** (about 15 seconds plus a 3 MB download):
 
 ```bash
-python fetch_data.py figS8 --verify        # Fig. S8 inputs from KiltHub, SHA-256 checked
+python fetch_data.py figS8                 # Fig. S8 inputs from KiltHub (SHA-256 checked on download)
 python figS8/build/S8BCD_volcano.py && python figS8/build/S8E_luxActivity.py
 python figS8/render/S8BCD_volcano.py && python figS8/render/S8E_luxActivity.py
 ```
